@@ -54,10 +54,10 @@ def read_config_file(conf_ini_file):
 def main():
     """ Misc Experiments, testing modules """
 
-    # # reading from a config, ini file
-    # conf_ini_file = './sample_config.ini'
-    # print_file_contents(conf_ini_file)
-    # read_config_file(conf_ini_file)
+    # reading from a config, ini file
+    conf_ini_file = './configs/sample_config.ini'
+    print_file_contents(conf_ini_file)
+    read_config_file(conf_ini_file)
 
     # testing log parsing/gardening module.
     # logfile = "./logs/sample_service_log.txt"
@@ -99,6 +99,7 @@ def main():
     # #     print('\nverify: input validation: numbytes: {}'.format(numbytes))
     # #     output = log_gardening.readlog_head(logfile, numbytes)
     # #     print('output: {}'.format(repr(output)))
+
 
 if __name__ == '__main__':
     main()
