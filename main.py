@@ -7,11 +7,13 @@ Misc Experiments:
 """
 # pylint: disable=missing-function-docstring
 
+# imports: Std, 3rdParty, CustomLocal
 from configparser import ConfigParser
-# import log_gardening
 from pprint import pprint
 
 import pytest
+
+from modules import log_gardening
 
 
 def sum_to_n(num=1):
@@ -27,56 +29,76 @@ def test_sum_to_n(n_input, exp_output):
     err_msg = 'input: {}: unexpected result'.format(n_input)
     assert actual_result == exp_output, err_msg
 
-def main():
-    """ Misc Experiments, testing modules """
-    print('this is the main program... Ta!')
+def print_file_contents(filepath):
+    with open(filepath, 'r') as file:
+        content = file.read()
+    delim = '++++++++++++++++++++'
+    print(delim)
+    print(content)
+    print(delim)
 
-    conf_ini_file = './sample_config.ini'
+def read_config_file(conf_ini_file):
     config = ConfigParser()
-    config_data = config.read(conf_ini_file)
-    print('DEBUG: config data'); pprint(config_data)
-
-    print('Config: Sections: ', config.sections())
-    print('Config: param: str: ', config.get('build', 'library'))
+    config.read(conf_ini_file)
+    print('Config: Sections: ', config.sections(), '\n')
+    for section in config.sections():
+        print('Config: section values: {}: {}'.format(
+                section, [(val, config.get(section, val)) for val in config.options(section)]
+            )
+        )
+    print('\nConfig: param: str: ', config.get('build', 'library'))
     print('Config: int: ', config.get('operation', 'timeout'))
     print('Config: bool: ', config.get('operation', 'offset'))
 
-    # # testing log parsing/gardening module.
-    # logfile = "./sample_service_log.txt"
-    # # logchunks = []
-    # # limit = 3
-    # # while len(logchunks) < limit:
-    # #     chunk = log_gardening.readlog_chunks(logfile, chunksize=40)
-    # #     logchunks.append([line for line in chunk])
-    # # pprint(logchunks)
 
-    # # log_gardening.printlog_lines(logfile)
+def main():
+    """ Misc Experiments, testing modules """
 
-    # chunkbytes = 200
+    # # reading from a config, ini file
+    # conf_ini_file = './sample_config.ini'
+    # print_file_contents(conf_ini_file)
+    # read_config_file(conf_ini_file)
+
+    # testing log parsing/gardening module.
+    # logfile = "./logs/sample_service_log.txt"
+    logfile = "./logs/geckodriver.log"
+
+    # logchunks = []
+    # limit = 3
+    # while len(logchunks) < limit:
+    #     chunk = log_gardening.readlog_chunks(logfile, chunksize=40)
+    #     print('\nDEBUG: log chunk:')
+    #     pprint([line for line in chunk])
+    #     logchunks.append([line for line in chunk])
+    # print('\nDEBUG: log chunk:')
+    # pprint(logchunks)
+
+    # log_gardening.printlog_lines(logfile)
+    log_gardening.printlog_lines_head(logfile, 12)
+
+    # valid_h_numbytes = [2, 20, 60, 100]
+    # for vh_numbytes in valid_h_numbytes:
+    #     head = log_gardening.readlog_head(logfile, numbytes=vh_numbytes)
+    #     print('\n{}: HEAD: {} bytes'.format(logfile, vh_numbytes))
+    #     pprint(head)
+
+    # chunkbytes = 400
     # offstart = 50
-
-    # head = log_gardening.readlog_head(logfile, numbytes=chunkbytes)
-    # print('\nHEAD {} bytes of: {}'.format(chunkbytes, logfile))
-    # pprint(head)
-
     # chunk = log_gardening.readlog_offsetchunk(logfile, offset=offstart, numbytes=chunkbytes)
-    # print('\nCHUNK {} bytes, offset from {} of {}'.format(
-    #     chunkbytes, offstart, logfile
-    #     )
-    # )
+    # print('\nCHUNK {} bytes, offset from {} of {}'.format(chunkbytes, offstart, logfile))
     # pprint(chunk)
 
-    # tail = log_gardening.readlog_tail(logfile, numbytes=chunkbytes)
-    # print('\nTAIL {} bytes of: {}'.format(chunkbytes, logfile))
-    # pprint(tail)
+    # valid_t_numbytes = [1, 10, 30, 40]
+    # for vt_numbytes in valid_t_numbytes:
+    #     tail = log_gardening.readlog_tail(logfile, numbytes=vt_numbytes)
+    #     print('\n{}: TAIL: {} bytes'.format(logfile, vt_numbytes))
+    #     pprint(tail)
 
-    # print('\n')
-
-    # invalid_numbytes = [-100, 100000000000, 0, -1, 0.01]
-    # for numbytes in invalid_numbytes:
-    #     print('verify: input validation: numbytes: {}'.format(numbytes))
-    #     output = log_gardening.readlog_head(logfile, numbytes)
-    #     print('output: {}'.format(repr(output)))
+    # # invalid_numbytes = [100000000000, 0, -1, -100, 0.01]
+    # # for numbytes in invalid_numbytes:
+    # #     print('\nverify: input validation: numbytes: {}'.format(numbytes))
+    # #     output = log_gardening.readlog_head(logfile, numbytes)
+    # #     print('output: {}'.format(repr(output)))
 
 if __name__ == '__main__':
     main()

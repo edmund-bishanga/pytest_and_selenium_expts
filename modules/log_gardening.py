@@ -20,10 +20,10 @@ from pprint import pprint
 
 args = sys.argv[1:]
 if not args:
-    args = ['./sample_service_log.txt']
+    args = ['./logs/sample_service_log.txt']
 assert len(args) >= 1,'Please provide at least one arg: "filepath"'
 
-logfile_path = args[0] if args else "./sample_service_log.txt"
+logfile_path = args[0] if args else "./logs/sample_service_log.txt"
 
 def readlog_chunks(logfile_path, chunksize=1024):
     with open(logfile_path, 'r') as f:
@@ -41,8 +41,18 @@ def printlog_lines(logfile_path):
         if line and line[0].isalnum():
             print("{}".format(line))
 
+def printlog_lines_head(logfile_path, num_lines=10):
+    assert type(logfile_path) == str
+    file_generator = (line.strip() for line in open(logfile_path, 'r'))    
+    line_num = 0
+    for line in file_generator:
+        line_num = line_num + 1
+        print('{}: {}'.format(line_num, line))
+        if line_num == num_lines:
+            break
+
 def readlog_tail(logfile_path, numbytes=100):
-    assert type(numbytes) == int, "numbytes: expects: +ve number"
+    assert type(numbytes) == int and numbytes > 0, "numbytes: expects: +ve integer"
     with open(logfile_path, 'rb') as f:
         tail = f.read(f.seek(-numbytes, 2))
     return tail
