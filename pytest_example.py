@@ -1,29 +1,31 @@
 #!usr/bin/python
 
 import math
+
 import pytest
-import log_gardening
 
-def test_sqrt():
-   num = 25
-   assert math.sqrt(num) == 5
+# from log_modules import log_gardening
 
-def test_square():
-   num = 7
+valid_pairs = [(7, 49), (2, 4), (1, 1), (0, 0)]
+@pytest.mark.parametrize("p_sqrt, num", valid_pairs)
+def test_sqrt(num, p_sqrt):
+   assert math.sqrt(num) == p_sqrt
+
+@pytest.mark.parametrize("num, p_square", valid_pairs)
+def test_square(num, p_square):
    print(num**2)
-   assert num**2 == 49, "means ABC"
+   err_msg = "invalid pair: ({}, {})".format(num, p_square)
+   assert num**2 == p_square, err_msg
 
-def test_equality():
-   assert 10 == 11, "means EFG"
+valid_eq_pairs = [(127127127127127, 127127127127127), (7, 7), (2, 2), (1, 1)]
+@pytest.mark.parametrize("num1, num2", valid_eq_pairs)
+def test_equality_ints(num1, num2):
+   err_msg = "{} not equal to {}".format(num1, num2)
+   assert num1 == num2, err_msg
 
-invalid_options = ['123', 'abc', '~', './sample_service_log.txt']
-@pytest.mark.parametrize("logfile_path", invalid_options)
-def test_readlog_tail_invalid_path(logfile_path='1234'):
-    print('Testing: {}'.format(logfile_path))
-    with pytest.raises(FileNotFoundError):
-        log_gardening.readlog_tail(logfile_path)
-
-test_readlog_tail_invalid_path()
-test_sqrt()
-test_square()
-test_equality()
+# invalid_options = ['123', 'abc', '~', './sample_service_log.txt']
+# @pytest.mark.parametrize("logfile_path", invalid_options)
+# def test_readlog_tail_invalid_path(logfile_path='1234'):
+#     print('Testing: {}'.format(logfile_path))
+#     with pytest.raises(FileNotFoundError):
+#         log_gardening.readlog_tail(logfile_path)
