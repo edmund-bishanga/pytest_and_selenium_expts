@@ -1,6 +1,11 @@
 #!usr/bin/python
 
-# log gardening module
+""" 
+log gardening module:
+Often SysTest Experiments generate logs
+These need to be post-processed and analysed
+This module aims to have re-usable methods for doing just that...
+"""
 
 # primary APIs
 # + read_chunks
@@ -18,11 +23,12 @@ import sys
 import pytest
 from pprint import pprint
 
-args = sys.argv[1:]
-if not args:
-    args = ['./logs/sample_service_log.txt']
-assert len(args) >= 1,'Please provide at least one arg: "filepath"'
+# args = sys.argv[1:]
+# if not args:
+#     args = ['./logs/sample_service_log.txt']
+# assert len(args) >= 1,'Please provide at least one arg: "filepath"'
 
+args = None
 logfile_path = args[0] if args else "./logs/sample_service_log.txt"
 
 def readlog_chunks(logfile_path, chunksize=1024):
@@ -73,9 +79,11 @@ def readlog_offsetchunk(logfile_path, offset=0, numbytes=100):
 
 valid_logfilepath = logfile_path
 invalid_numbytes = [-100, 100000000000, 0, -1]
+@pytest.mark.skip(reason="not in appropriate syntactic format")
 def test_readlog_head_invalid_input(valid_logfilepath, invalid_numbytes):
     # input validation
     print('started: inputs: {} {}'.format(valid_logfilepath, invalid_numbytes))
+
     # main 
     with pytest.raises(AssertionError) as exec_info:
         output = readlog_head(valid_logfilepath, invalid_numbytes)
@@ -85,3 +93,10 @@ def test_readlog_head_invalid_input(valid_logfilepath, invalid_numbytes):
 
     # output verification
     print('done')
+
+invalid_options = ['123', 'abc', '~', './sample_service_log.txt']
+@pytest.mark.parametrize("logfile_path", invalid_options)
+def test_readlog_tail_invalid_path(logfile_path):
+    print('Testing: {}'.format(logfile_path))
+    with pytest.raises(FileNotFoundError):
+        readlog_tail(logfile_path)

@@ -10,10 +10,11 @@ Misc Experiments:
 # imports: Std, 3rdParty, CustomLocal
 from configparser import ConfigParser
 from pprint import pprint
+import time
 
 import pytest
 
-from modules import log_gardening
+from log_modules import log_gardening
 
 
 def sum_to_n(num=1):
@@ -50,6 +51,11 @@ def read_config_file(conf_ini_file):
     print('Config: int: ', config.get('operation', 'timeout'))
     print('Config: bool: ', config.get('operation', 'offset'))
 
+def convert_epoch_to_datetime(epoch_time):
+    t_format = '%Y-%m-%d %H:%M:%S'
+    t_format = '%a/%d.%b.%Y %H:%M:%S'
+    return time.strftime(t_format, time.localtime(epoch_time))
+
 
 def main():
     """ Misc Experiments, testing modules """
@@ -58,6 +64,12 @@ def main():
     conf_ini_file = './configs/sample_config.ini'
     print_file_contents(conf_ini_file)
     read_config_file(conf_ini_file)
+
+    epoch_time = 1554723620
+    timestr = convert_epoch_to_datetime(epoch_time)
+    print('\nDEBUG: timestr for: {}'.format(epoch_time))
+    pprint(timestr)
+    print('\n')
 
     # testing log parsing/gardening module.
     # logfile = "./logs/sample_service_log.txt"
