@@ -96,7 +96,7 @@ def main():
     # Input validation
     args = argparse.ArgumentParser()
     args.add_argument(
-        '-f', "--input-file", default='./test_data_youtube_web_api.json', help='str: path to JSON inputs file'
+        '-f', "--input-file", default='./data/test_data_youtube_web_api.json', help='str: path to JSON inputs file'
     )
     inputs = args.parse_args()
     print('\nInput validation:')
