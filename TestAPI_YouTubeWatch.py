@@ -1,21 +1,22 @@
 #!/usr/bin/python
+
 """
 Interactive Script:
 + Tests APIs of 'YouTube Watch'
 
 # youtube web RestAPI example
 # 1. test URL params: t, hl, fmt
-# Ref: https://webapps.stackexchange.com/questions/9863/are-the-parameters-for-www-youtube-com-watch-documented 
-# Example: https://www.youtube.com/watch?v=6FzAexTVNt0&t=124s 
+# Ref: https://webapps.stackexchange.com/questions/9863/are-the-parameters-for-www-youtube-com-watch-documented  # pylint: disable=line-too-long
+# Example: https://www.youtube.com/watch?v=6FzAexTVNt0&t=124s
 
 # 2. equivalence partition technique
-# t: 
+# t:
 #   valid: int:     0s, 10s, 1m15s, 0h10m03s, 123s
 #   invalid: var:   -100s, -3m10s, abc, #
-# fmt: 
+# fmt:
 #   valid: int:     5, 34, 35, 18, 22, 37, 38, 43, 45, 17
 #   invalid: var:   0, -1, i, #
-# hl: 
+# hl:
 #   valid: str:     en-GB, en-US, zh-TW, fr-FR, nl-NL
 #   invalid: var:   abc, en-12, *h-TW, 123
 
@@ -45,11 +46,12 @@ G_DELIM = "&"
 
 
 def run_api_check(relevant_inputs):
+    """ constructs and verifies individual API CMDs; returns outputs dict """
     outputs = relevant_inputs
     for key in relevant_inputs:
         print(relevant_inputs[key])
         # form API cmd
-        api_key = key.split('_')[0]
+        # api_key = key.split('_')[0]
         api_cmd = URL_ROOT + R_DELIM
         api_cmd_suffix = relevant_inputs[key][1]
         api_cmd = api_cmd + " ".join(api_cmd_suffix)
@@ -66,13 +68,14 @@ def run_api_check(relevant_inputs):
         if response["status_code"] == 200:
             outcome = 'PASS'
         outputs[key].append(outcome)
-        assert outcome == relevant_inputs[key][-1], "unexpected result: {}".format(key)
+        err_msg = "unexpected result: {}".format(key)
+        assert outcome == relevant_inputs[key][-1], err_msg
     print('\nDEBUG: outputs'); pprint(outputs)
     return outputs
 
 
 def test_api_athlete(inputs_json_file):
-    """ API: -a, --athlete: test various inputs """
+    """ reads and tests each JSON key-value pair provided """
     # read json input
     with open(inputs_json_file, 'r') as inputs_file:
         inputs_data = json.load(inputs_file)
@@ -96,7 +99,8 @@ def main():
     # Input validation
     args = argparse.ArgumentParser()
     args.add_argument(
-        '-f', "--input-file", default='./data/test_data_youtube_web_api.json', help='str: path to JSON inputs file'
+        '-f', "--input-file", default='./data/test_data_youtube_web_api.json',
+        help='str: path to JSON inputs file'
     )
     inputs = args.parse_args()
     print('\nInput validation:')
