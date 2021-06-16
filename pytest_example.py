@@ -2,7 +2,6 @@
 
 import math
 import pytest
-# from log_modules import log_gardening
 
 valid_pairs = [(7, 49), (2, 4), (1, 1), (0, 0)]
 @pytest.mark.parametrize("p_sqrt, num", valid_pairs)

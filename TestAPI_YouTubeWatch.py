@@ -36,6 +36,7 @@ Interactive Script:
 import argparse
 import json
 import sys
+import re
 from pprint import pprint
 
 import requests
@@ -45,11 +46,49 @@ R_DELIM = "?"
 G_DELIM = "&"
 
 
+def run_api_check_requests(relevant_inputs):
+    """ constructs and verifies individual API CMDs; returns outputs dict """
+    outputs = relevant_inputs
+    print('DEBUG: relevant_inputs:'); pprint(relevant_inputs)
+    for key in relevant_inputs:
+        print(relevant_inputs[key])
+
+        results = list()
+        for val in relevant_inputs[key][0]:
+            # form API cmd components
+            # + root URL, params dict
+            params = {key.split('_')[0]: val}
+            print('\nDEBUG: params:'); pprint(params)
+
+            # run it
+            response = requests.get(URL_ROOT, params)
+            print('DEBUG: URL'); print(response.url)
+            print('DEBUG: response: status_code'); pprint(response.status_code)
+            print('DEBUG: response: encoding'); pprint(response.encoding)
+            # print('DEBUG: response: binary content'); pprint(response.content)
+            # print('DEBUG: response: text'); pprint(response.text)
+
+            # verify outcome
+            outcome = 'FAIL'
+            if response.status_code == 200 and 'YouTube' in response.text:
+                outcome = 'PASS'
+            results.append(outcome)
+
+        print('DEBUG: results'); pprint(results)
+        outputs[key].append(results)
+
+        # err_msg = "unexpected result: {}".format(key)
+        # assert outcome == relevant_inputs[key][-1], err_msg
+        print('\nDEBUG: outputs'); pprint(outputs)
+    return outputs
+
+
 def run_api_check(relevant_inputs):
     """ constructs and verifies individual API CMDs; returns outputs dict """
     outputs = relevant_inputs
     for key in relevant_inputs:
         print(relevant_inputs[key])
+
         # form API cmd
         # api_key = key.split('_')[0]
         api_cmd = URL_ROOT + R_DELIM
@@ -84,18 +123,22 @@ def test_api_athlete(inputs_json_file):
     # get relevant test input data
     relevant_inputs = dict()
     for key in inputs_data:
-        if 't_' in inputs_data[key]:
+        t_regex = r'^t_*.*'
+        if re.search(t_regex, key):
+        # if 't_' in key:
             relevant_inputs[key] = inputs_data[key]
     print('\nDEBUG: relevant_inputs'); pprint(relevant_inputs)
 
     # validate input data
 
     # run test: get system_response, verify response, report verdict
-    run_api_check(relevant_inputs)
+    # run_api_check(relevant_inputs)
+    run_api_check_requests(relevant_inputs)
 
 
 def main():
     """ Interactive function: API Testing. """
+
     # Input validation
     args = argparse.ArgumentParser()
     args.add_argument(
