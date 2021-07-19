@@ -89,15 +89,16 @@ def validate_inputs(inputs):
         assert 'v' in inputs.bible_passage, err_msg_bp
 
 def get_passage_lnk(bible_passage_char):
-    p_regex = r'(\w+)(\d+)v(\d+)'
+    p_regex = r'(\w+).(\d+)v(\d+)'
     has_end_verse = False
     for char in ['-', '_']:
         if char in bible_passage_char:
-            p_regex = r'(\w+)(\d+)v(\d+)[-|_](\d+)'
+            p_regex = r'(\w+).(\d+)v(\d+)[-|_](\d+)'
             has_end_verse = True
     matched = re.match(p_regex, bible_passage_char)
     assert matched, 'invalid bible passage: {}\nDetails: -h|--help'.format(bible_passage_char)
 
+    print('\nDEBUG: matched book string: ', matched.group(1))
     book = BIBLE_BOOKS.get(matched.group(1))
     if not book:
         resolver = 'should be one of these: {}'.format(BIBLE_BOOKS.keys())
@@ -119,7 +120,7 @@ def main():
     args = argparse.ArgumentParser()
     args.add_argument(
         '-B', "--bible-passage", default='John3v16_19',
-        help='char: Bible Passage in format: {Book}{Chapter}v{StartVerse}_{EndVerse}'
+        help='char: Bible Passage in format: {Book}.{Chapter}v{StartVerse}_{EndVerse}'
     )
     args.add_argument(
         '-v', "--bible-version", default='NKJV',
