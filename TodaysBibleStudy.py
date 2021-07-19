@@ -86,30 +86,29 @@ def validate_inputs(inputs):
     input_format_err_msg = "invalid format: details, see --help/-h"
     if inputs.bible_passage:
         err_msg_bp = "{}: {}".format('-B|--bible-passage', input_format_err_msg)
-        assert 'v' in inputs.bible_passage, err_msg_bp
+        assert '.' in inputs.bible_passage, err_msg_bp
 
-def get_passage_lnk(bible_passage_char):
-    p_regex = r'(\w+).(\d+)v(\d+)'
+def get_passage_lnk(bible_passage_str):
+    p_regex = r'(\w+).(\d+)v(\d+)' if 'v' in bible_passage_str else r'(\w+).(\d+)'
     has_end_verse = False
     for char in ['-', '_']:
-        if char in bible_passage_char:
+        if char in bible_passage_str:
             p_regex = r'(\w+).(\d+)v(\d+)[-|_](\d+)'
             has_end_verse = True
-    matched = re.match(p_regex, bible_passage_char)
-    assert matched, 'invalid bible passage: {}\nDetails: -h|--help'.format(bible_passage_char)
+    matched = re.match(p_regex, bible_passage_str)
+    assert matched, 'invalid bible passage: {}\nDetails: -h|--help'.format(bible_passage_str)
 
-    print('\nDEBUG: matched book string: ', matched.group(1))
     book = BIBLE_BOOKS.get(matched.group(1))
     if not book:
         resolver = 'should be one of these: {}'.format(BIBLE_BOOKS.keys())
-        assert book, 'invalid Bible Book format: {}\n{}'.format(bible_passage_char, resolver)
+        assert book, 'invalid Bible Book format: {}\n{}'.format(bible_passage_str, resolver)
 
     chapter = matched.group(2)
-    start_verse = matched.group(3)
+    start_verse = matched.group(3) if 'v' in bible_passage_str else ''
     end_verse = matched.group(4) if has_end_verse else ''
     verses = start_verse
     verses = verses + '-' + end_verse if has_end_verse else verses
-    passage_lnk = '.'.join([book, chapter, verses])
+    passage_lnk = '.'.join([book, chapter, verses]).strip('.')
     return passage_lnk
 
 def main():
