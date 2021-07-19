@@ -113,10 +113,7 @@ def get_passage_lnk(bible_passage_char):
     return passage_lnk
 
 def main():
-    """ Interactive function: Inputs event details, provides normalised insights. """
-    # Example input format
-    # python3 ./TodaysParkRun.py -n "Bishanga, EM" -t 00:18:18 -d 3.1 -s "PocketPark"
-    # python3 ./TodaysParkRun.py --name "Bishanga, EM" --time 00:18:18 --distance 3.1 --space "PocketPark"
+    """ Interactive function: Takes bible passage, provides summary. """
     args = argparse.ArgumentParser()
     args.add_argument(
         '-B', "--bible-passage", default='John3v16_19',
