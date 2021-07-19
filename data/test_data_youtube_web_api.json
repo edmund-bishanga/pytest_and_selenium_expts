@@ -1,10 +1,11 @@
 {
-    "t_valid":      [["0s", "10s", "1m15s", "0h10m03s", "123s"], "200", "PASS"],
-    "t_invalid":    [["-100s", "12h1m15s", "-10m03s", "abc", "#"], "404", "PASS"],
-    "fmt_valid":    [[5,34, 35, 18, 22, 37, 38, 43, 45, 17], "200", "PASS"],
-    "fmt_invalid":  [["-1", 0, -1, "i", "#"], "404", "FAIL"],
-    "h1_valid":     [["en-GB", "en-US", "zh-TW", "fr-FR", "nl-NL"], "200", "PASS"],
-    "h1_invalid":   [["abc", "en-12", "*h-TW", 123, "#"], "404", "FAIL"],
-    "t_overwhelm1": [["BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB", ""], "404", "FAIL"],
-    "t_overwhelm2": [["-1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", ""], "404", "FAIL"] 
+    "t_valid_green":        { "t": ["0s", "10s", "1m15s", "0h10m03s", "123s"], "exp_exit_code": 200, "exp_output_str": "OK", "PASS": true },
+    "t_invalid_orange":     { "t": ["-100s", "12h1m15s", "-10m03s", "abc", "#"], "exp_exit_code": 403, "exp_output_str": "ERROR, TypoWarningCommunicated", "PASS": false },
+    "t_catastrophic_red":   { "t": ["-100000000000000000000000000", "", "######", "$(random(ridiculous_input))"], "exp_exit_code": 503, "exp_output": "ERROR, DisasterGracefullyHandled", "PASS": false },
+
+    "fmt_valid_green":      { "fmt": [5,34, 35, 18, 22, 37, 38, 43, 45, 17], "exp_exit_code": 200, "exp_output_str": "OK", "PASS": true},
+    "fmt_invalid_red":      { "fmt": ["-1", 0, -1, "i", "#"], "exp_exit_code": 404, "exp_output_str": "Error", "PASS": false},
+
+    "h1_valid_green":       { "h1": ["en-GB", "en-US", "zh-TW", "fr-FR", "nl-NL"], "exp_exit_code": 200, "exp_output_str": "OK", "PASS": true},
+    "h1_invalid_red":       { "h1": ["abc", "en-12", "*h-TW", 123, "#"], "exp_exit_code": 404, "exp_output_str": "Error", "PASS": false}
 }
