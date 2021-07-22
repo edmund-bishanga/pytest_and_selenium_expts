@@ -83,12 +83,22 @@ BIBLE_BOOKS = {
 }
 
 def validate_inputs(inputs):
+    """ why: to minimise dirty data inputs e.g. typos """
     input_format_err_msg = "invalid format: details, see --help/-h"
     if inputs.bible_passage:
         err_msg_bp = "{}: {}".format('-B|--bible-passage', input_format_err_msg)
         assert '.' in inputs.bible_passage, err_msg_bp
 
-def get_passage_lnk(bible_passage_str):
+def get_bible_version_id(version_name):
+    if version_name in BIBLE_VERSIONS:
+        version_id = BIBLE_VERSIONS[version_name]
+    else:
+        ver_err_msg = '-v|--bible-version: should be one of', BIBLE_VERSIONS
+        assert version_name not in BIBLE_VERSIONS, ver_err_msg
+    return version_id
+
+def get_passage_lnk(inputs):
+    bible_passage_str = inputs.bible_passage
     p_regex = r'(\w+).(\d+)v(\d+)' if 'v' in bible_passage_str else r'(\w+).(\d+)'
     has_end_verse = False
     for char in ['-', '_']:
@@ -101,7 +111,7 @@ def get_passage_lnk(bible_passage_str):
     book = BIBLE_BOOKS.get(matched.group(1))
     if not book:
         resolver = 'should be one of these: {}'.format(BIBLE_BOOKS.keys())
-        assert book, 'invalid Bible Book format: {}\n{}'.format(bible_passage_str, resolver)
+        assert book, 'Invalid Bible Book format/typo: {}\n{}'.format(bible_passage_str, resolver)
 
     chapter = matched.group(2)
     start_verse = matched.group(3) if 'v' in bible_passage_str else ''
@@ -109,7 +119,12 @@ def get_passage_lnk(bible_passage_str):
     verses = start_verse
     verses = verses + '-' + end_verse if has_end_verse else verses
     passage_lnk = '.'.join([book, chapter, verses]).strip('.')
-    return passage_lnk
+
+    version_id = get_bible_version_id(inputs.bible_version)
+    bible_passage_url = '/'.join([BIBLE_ROOT_URL, LANGUAGE, 'bible', version_id, passage_lnk])
+    print('\nDEBUG: bible passage: URL: ', bible_passage_url)
+
+    return bible_passage_url
 
 def main():
     """ Interactive function: Takes bible passage, provides summary. """
@@ -142,16 +157,7 @@ def main():
 
     # Assemble the Bible Passage link
     # e.g. https://www.bible.com/en-GB/bible/114/jhn.3.16-19
-    if inputs.bible_version in BIBLE_VERSIONS:
-        version = BIBLE_VERSIONS[inputs.bible_version]
-    else:
-        ver_err_msg = '-v|--bible-version: should be one of', BIBLE_VERSIONS
-        assert inputs.bible_version not in BIBLE_VERSIONS, ver_err_msg
-
-    passage_lnk = get_passage_lnk(inputs.bible_passage)
-    bible_passage_url = '/'.join([BIBLE_ROOT_URL, LANGUAGE, 'bible', version, passage_lnk])
-    print('\nDEBUG: bible passage: URL: ', bible_passage_url)
-    sys.exit(0)
+    bible_passage_url = get_passage_lnk(inputs)
 
     # Get the Memory Verse
 
