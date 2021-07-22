@@ -8,13 +8,14 @@ Misc Experiments:
 # pylint: disable=missing-function-docstring
 
 # imports: Std, 3rdParty, CustomLocal
+import time
+import sys
 from configparser import ConfigParser
 from pprint import pprint
-import time
 
 import pytest
-
-from log_modules import log_gardening
+import yaml
+from yaml.loader import SafeLoader
 
 
 def sum_to_n(num=1):
@@ -51,6 +52,24 @@ def read_config_file(conf_ini_file):
     print('Config: int: ', config.get('operation', 'timeout'))
     print('Config: bool: ', config.get('operation', 'offset'))
 
+def read_yaml_file(conf_yml_file):
+    with open(conf_yml_file, 'r') as file_obj:
+        config = list(yaml.load_all(file_obj, Loader=SafeLoader))
+        pprint(config, width=120)
+
+    assert config[0], '{}: empty .yaml config'.format(conf_yml_file)
+    primary_conf = config[0]
+
+    print('\nConfig: param: str: ', primary_conf.get('Build'))
+    for section in primary_conf.keys():
+        print('\nDEBUG: section: ', section)
+        print('\nDEBUG: {}: \nsection contents: \n{}'.format(section, primary_conf.get(section)))
+        for item in primary_conf.get(section):
+            if section == 'Operation':
+                for key in item.keys():
+                    if key == 'timeout':
+                        print('{}: {}'.format(key, item.get(key)))
+
 def convert_epoch_to_datetime(epoch_time):
     t_format = '%Y-%m-%d %H:%M:%S'
     t_format = '%a/%d.%b.%Y %H:%M:%S'
@@ -59,6 +78,11 @@ def convert_epoch_to_datetime(epoch_time):
 
 def main():
     """ Misc Experiments, testing modules """
+
+    # parse .yaml file
+    config_yml_file = "./configs/sample_config.yml"
+    read_yaml_file(config_yml_file)
+    sys.exit(0)
 
     # reading from a config, ini file
     conf_ini_file = './configs/sample_config.ini'

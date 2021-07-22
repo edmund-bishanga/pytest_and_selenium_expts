@@ -1,0 +1,16 @@
+---
+# comment: sample config.yaml/.yml file
+Build:
+  - source: "abc.py"
+  - root: "/usr/bin"
+  - library: "%(root)s/lib"
+  - includes: "%(root)s/include"
+
+Configure:
+  - mode: "debug"
+  - logging: "verbose"
+
+Operation:
+  - timeout: 90
+  - offset: true
+---
