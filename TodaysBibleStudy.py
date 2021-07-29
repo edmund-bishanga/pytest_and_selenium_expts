@@ -44,6 +44,9 @@ import argparse
 import re
 import sys
 from pprint import pprint
+from urllib.request import Request, urlopen
+
+from bs4 import BeautifulSoup
 
 BIBLE_ROOT_URL = 'https://www.bible.com'
 LANGUAGE = 'en-GB'
@@ -126,6 +129,16 @@ def get_passage_lnk(passage_str, bible_version):
 
     return bible_passage_url
 
+def get_passage_txt_from_url(passage_url):
+    # get HTML/String Content from url
+    req = Request(passage_url, headers={'User-Agent': "Magic Browser"})
+    page = urlopen(req)
+    html = page.read().decode('utf-8')
+    soup = BeautifulSoup(html, 'html.parser')
+    # extract the relevant passage text
+    end_index = soup.get_text().find(' |')
+    passage_txt = soup.get_text()[:end_index]
+    return passage_txt
 
 def main():
     """ Interactive function: Takes bible passage, provides summary. """
@@ -162,6 +175,8 @@ def main():
 
     # Get the Memory Verse: link and text
     mem_verse_url = get_passage_lnk(inputs.memory_verse, inputs.bible_version)
+    mem_verse_txt = get_passage_txt_from_url(mem_verse_url)
+    print('\nDEBUG: mem_verse_txt:'); pprint(mem_verse_txt)
 
     # Collate the Summary
 
