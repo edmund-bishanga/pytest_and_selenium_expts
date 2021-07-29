@@ -93,11 +93,9 @@ def validate_inputs(inputs):
         assert '.' in inputs.bible_passage, err_msg_bp
 
 def get_bible_version_id(version_name):
-    if version_name in BIBLE_VERSIONS:
-        version_id = BIBLE_VERSIONS[version_name]
-    else:
-        ver_err_msg = '-v|--bible-version: should be one of', BIBLE_VERSIONS
-        assert version_name not in BIBLE_VERSIONS, ver_err_msg
+    ver_err_msg = '-v|--bible-version: should be one of', BIBLE_VERSIONS.keys()
+    assert version_name in BIBLE_VERSIONS, ver_err_msg
+    version_id = BIBLE_VERSIONS[version_name]
     return version_id
 
 def get_passage_lnk(passage_str, bible_version):
