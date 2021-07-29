@@ -39,7 +39,7 @@ def print_file_contents(filepath):
     print(content)
     print(delim)
 
-def read_config_file(conf_ini_file):
+def read_ini_config_file(conf_ini_file):
     config = ConfigParser()
     config.read(conf_ini_file)
     print('Config: Sections: ', config.sections(), '\n')
@@ -52,23 +52,21 @@ def read_config_file(conf_ini_file):
     print('Config: int: ', config.get('operation', 'timeout'))
     print('Config: bool: ', config.get('operation', 'offset'))
 
-def read_yaml_file(conf_yml_file):
+def get_yaml_config(conf_yml_file):
+    """ reads a YAML config file: ideally with one config """
+    config = {}
     with open(conf_yml_file, 'r') as file_obj:
-        config = list(yaml.load_all(file_obj, Loader=SafeLoader))
+        config = yaml.load(file_obj, Loader=SafeLoader)
         pprint(config, width=120)
+    assert config, '{}: invalid .yaml config file'.format(conf_yml_file)
+    return config
 
-    assert config[0], '{}: empty .yaml config'.format(conf_yml_file)
-    primary_conf = config[0]
-
-    print('\nConfig: param: str: ', primary_conf.get('Build'))
-    for section in primary_conf.keys():
-        print('\nDEBUG: section: ', section)
-        print('\nDEBUG: {}: \nsection contents: \n{}'.format(section, primary_conf.get(section)))
-        for item in primary_conf.get(section):
-            if section == 'Operation':
-                for key in item.keys():
-                    if key == 'timeout':
-                        print('{}: {}'.format(key, item.get(key)))
+def get_yaml_config_section_kvs(yaml_config, sect_name):
+    err_msg = '\n"{}": not in {}'.format(sect_name, yaml_config.keys())
+    # assert sect_name in yaml_config.keys(), err_msg
+    if sect_name not in yaml_config.keys():
+        print(err_msg)
+    return yaml_config.get(sect_name)
 
 def convert_epoch_to_datetime(epoch_time):
     t_format = '%Y-%m-%d %H:%M:%S'
@@ -81,13 +79,26 @@ def main():
 
     # parse .yaml file
     config_yml_file = "./configs/sample_config.yml"
-    read_yaml_file(config_yml_file)
+    yml_config = get_yaml_config(config_yml_file)
+    print('\nDEBUG: main: yml_config:'); pprint(yml_config)
+
+    key_names = ['mode', 'logs']
+    for sect_name in ['Build', 'Random', None, '', 'Configure']:
+        sect_kvs = get_yaml_config_section_kvs(yml_config, sect_name)
+        print('\nDEBUG: main: {}: kvs:'.format(sect_name)); pprint(sect_kvs)
+        if sect_kvs:
+            for item in sect_kvs:
+                # print('\nDEBUG: section: {}: item: {}'.format(sect_name, item))
+                for key in item.keys():
+                    if key in key_names:
+                        print('section: {}, item: [{}: "{}"]'.format(sect_name, key, item.get(key)))
+
     sys.exit(0)
 
     # reading from a config, ini file
     conf_ini_file = './configs/sample_config.ini'
     print_file_contents(conf_ini_file)
-    read_config_file(conf_ini_file)
+    read_ini_config_file(conf_ini_file)
 
     epoch_time = 1554723620
     timestr = convert_epoch_to_datetime(epoch_time)

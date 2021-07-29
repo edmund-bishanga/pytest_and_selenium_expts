@@ -1,4 +1,3 @@
----
 # comment: sample config.yaml/.yml file
 Build:
   - source: "abc.py"
@@ -13,4 +12,3 @@ Configure:
 Operation:
   - timeout: 90
   - offset: true
----
