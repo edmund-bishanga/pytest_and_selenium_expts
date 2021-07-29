@@ -97,8 +97,8 @@ def get_bible_version_id(version_name):
         assert version_name not in BIBLE_VERSIONS, ver_err_msg
     return version_id
 
-def get_passage_lnk(inputs):
-    bible_passage_str = inputs.bible_passage
+def get_passage_lnk(passage_str, bible_version):
+    bible_passage_str = passage_str
     p_regex = r'(\w+).(\d+)v(\d+)' if 'v' in bible_passage_str else r'(\w+).(\d+)'
     has_end_verse = False
     for char in ['-', '_']:
@@ -120,17 +120,18 @@ def get_passage_lnk(inputs):
     verses = verses + '-' + end_verse if has_end_verse else verses
     passage_lnk = '.'.join([book, chapter, verses]).strip('.')
 
-    version_id = get_bible_version_id(inputs.bible_version)
+    version_id = get_bible_version_id(bible_version)
     bible_passage_url = '/'.join([BIBLE_ROOT_URL, LANGUAGE, 'bible', version_id, passage_lnk])
-    print('\nDEBUG: bible passage: URL: ', bible_passage_url)
+    print('\nDEBUG: bible passage: {}: URL: {}'.format(bible_passage_str, bible_passage_url))
 
     return bible_passage_url
+
 
 def main():
     """ Interactive function: Takes bible passage, provides summary. """
     args = argparse.ArgumentParser()
     args.add_argument(
-        '-B', "--bible-passage", default='John3v16_19',
+        '-B', "--bible-passage", default='John.3v16_19',
         help='char: Bible Passage in format: {Book}.{Chapter}v{StartVerse}_{EndVerse}'
     )
     args.add_argument(
@@ -138,7 +139,7 @@ def main():
         help='char: Version of the Bible, abbr e.g. ESV, KJV'
     )
     args.add_argument(
-        '-M', "--memory-verse", default='John3v18',
+        '-M', "--memory-verse", default='John.3v18',
         help='char: Cornerstone MemoryVerse, Today: Here, Now, this season'
     )
     args.add_argument(
@@ -157,9 +158,10 @@ def main():
 
     # Assemble the Bible Passage link
     # e.g. https://www.bible.com/en-GB/bible/114/jhn.3.16-19
-    bible_passage_url = get_passage_lnk(inputs)
+    bible_passage_url = get_passage_lnk(inputs.bible_passage, inputs.bible_version)
 
-    # Get the Memory Verse
+    # Get the Memory Verse: link and text
+    mem_verse_url = get_passage_lnk(inputs.memory_verse, inputs.bible_version)
 
     # Collate the Summary
 
