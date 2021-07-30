@@ -98,7 +98,7 @@ def get_bible_version_id(version_name):
     version_id = BIBLE_VERSIONS[version_name]
     return version_id
 
-def get_passage_lnk(passage_str, bible_version):
+def get_passage_url(passage_str, bible_version):
     bible_passage_str = passage_str
     p_regex = r'(\w+).(\d+)v(\d+)' if 'v' in bible_passage_str else r'(\w+).(\d+)'
     has_end_verse = False
@@ -175,12 +175,12 @@ def main():
 
     # Assemble the Bible Passage link
     # e.g. https://www.bible.com/en-GB/bible/114/jhn.3.16-19
-    bible_passage_url = get_passage_lnk(inputs.bible_passage, inputs.bible_version)
+    bible_passage_url = get_passage_url(inputs.bible_passage, inputs.bible_version)
     bible_passage_txt = get_passage_txt_from_url(bible_passage_url, inputs.bible_version)
     print('\nDEBUG: bible_passage_txt:'); pprint(bible_passage_txt)
 
     # Get the Memory Verse: link and text
-    mem_verse_url = get_passage_lnk(inputs.memory_verse, inputs.bible_version)
+    mem_verse_url = get_passage_url(inputs.memory_verse, inputs.bible_version)
     mem_verse_txt = get_passage_txt_from_url(mem_verse_url, inputs.bible_version)
     print('\nDEBUG: mem_verse_txt:'); pprint(mem_verse_txt)
 
