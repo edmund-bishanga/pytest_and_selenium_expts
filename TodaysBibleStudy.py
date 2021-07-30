@@ -127,15 +127,21 @@ def get_passage_lnk(passage_str, bible_version):
 
     return bible_passage_url
 
-def get_passage_txt_from_url(passage_url):
+def get_passage_txt_from_url(passage_url, version):
     # get HTML/String Content from url
     req = Request(passage_url, headers={'User-Agent': "Magic Browser"})
     page = urlopen(req)
     html = page.read().decode('utf-8')
     soup = BeautifulSoup(html, 'html.parser')
+    entire_txt = soup.get_text()
+
     # extract the relevant passage text
-    end_index = soup.get_text().find(' |')
-    passage_txt = soup.get_text()[:end_index]
+    start_delim = ' ' + version
+    start_index = entire_txt.find(start_delim)
+    end_delim = version + ':'
+    end_index = entire_txt.find(end_delim)
+    passage_txt = entire_txt[start_index:end_index].strip(start_delim)
+
     return passage_txt
 
 def main():
@@ -170,10 +176,12 @@ def main():
     # Assemble the Bible Passage link
     # e.g. https://www.bible.com/en-GB/bible/114/jhn.3.16-19
     bible_passage_url = get_passage_lnk(inputs.bible_passage, inputs.bible_version)
+    bible_passage_txt = get_passage_txt_from_url(bible_passage_url, inputs.bible_version)
+    print('\nDEBUG: bible_passage_txt:'); pprint(bible_passage_txt)
 
     # Get the Memory Verse: link and text
     mem_verse_url = get_passage_lnk(inputs.memory_verse, inputs.bible_version)
-    mem_verse_txt = get_passage_txt_from_url(mem_verse_url)
+    mem_verse_txt = get_passage_txt_from_url(mem_verse_url, inputs.bible_version)
     print('\nDEBUG: mem_verse_txt:'); pprint(mem_verse_txt)
 
     # Collate the Summary
