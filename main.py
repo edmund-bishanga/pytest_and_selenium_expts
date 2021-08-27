@@ -7,10 +7,11 @@ Misc Experiments:
 """
 # pylint: disable=missing-function-docstring
 
+import sys
 # imports: Std, 3rdParty, CustomLocal
 import time
-import sys
 from configparser import ConfigParser
+from datetime import date, timedelta
 from pprint import pprint
 
 import pytest
@@ -73,25 +74,43 @@ def convert_epoch_to_datetime(epoch_time):
     t_format = '%a/%d.%b.%Y %H:%M:%S'
     return time.strftime(t_format, time.localtime(epoch_time))
 
+def get_time_str_n_weeks_away(n_weeks, start_date_str=None):
+    # start date
+    start_date = date.today() if not start_date_str else date.fromisoformat(start_date_str)
+    print('DEBUG: start_date: ', start_date)
+
+    # calculate date n weeks forward
+    print('DEBUG: n_weeks: ', n_weeks)
+    n_wks_date = start_date + timedelta(weeks=n_weeks)
+
+    return n_wks_date
+
 
 def main():
     """ Misc Experiments, testing modules """
 
-    # parse .yaml file
-    config_yml_file = "./configs/sample_config.yml"
-    yml_config = get_yaml_config(config_yml_file)
-    print('\nDEBUG: main: yml_config:'); pprint(yml_config)
+    # # parse .yaml file
+    # config_yml_file = "./configs/sample_config.yml"
+    # yml_config = get_yaml_config(config_yml_file)
+    # print('\nDEBUG: main: yml_config:'); pprint(yml_config)
 
-    key_names = ['mode', 'logs']
-    for sect_name in ['Build', 'Random', None, '', 'Configure']:
-        sect_kvs = get_yaml_config_section_kvs(yml_config, sect_name)
-        print('\nDEBUG: main: {}: kvs:'.format(sect_name)); pprint(sect_kvs)
-        if sect_kvs:
-            for item in sect_kvs:
-                # print('\nDEBUG: section: {}: item: {}'.format(sect_name, item))
-                for key in item.keys():
-                    if key in key_names:
-                        print('section: {}, item: [{}: "{}"]'.format(sect_name, key, item.get(key)))
+    # key_names = ['mode', 'logs']
+    # for sect_name in ['Build', 'Random', None, '', 'Configure']:
+    #     sect_kvs = get_yaml_config_section_kvs(yml_config, sect_name)
+    #     print('\nDEBUG: main: {}: kvs:'.format(sect_name)); pprint(sect_kvs)
+    #     if sect_kvs:
+    #         for item in sect_kvs:
+    #             # print('\nDEBUG: section: {}: item: {}'.format(sect_name, item))
+    #             for key in item.keys():
+    #                 if key in key_names:
+    #                     print('section: {}, item: [{}: "{}"]'.format(sect_name, key, item.get(key)))
+
+    default_NTDD = get_time_str_n_weeks_away(10)
+    print('DEBUG: default_NTDD: {}\n'.format(default_NTDD))
+
+    for start in ['', '2021-09-15', '1975-01-24']:
+        new_NTDD = get_time_str_n_weeks_away(10, start_date_str=start)
+        print('DEBUG: new_NTDD: {}\n'.format(new_NTDD))
 
     sys.exit(0)
 
