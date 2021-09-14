@@ -1,50 +1,63 @@
 #!usr/bin/python
+"""
+Web UI Test Automation Experiments: Selenium
+"""
 
-# Web UI Test Automation Example: from Paul Knight.
-# https://blog.testproject.io/2019/07/16/web-test-using-selenium-webdriver-python-chrome/
-
-import os 
+import sys
 from pprint import pprint
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
 
-def web_ui_auto_selenium_basics(browser_name):
-    URL = 'https://www.strava.com'
-    USERNAME = 'me.bishanga@gmail.com'
-    CRD = 'abc1234'
-    
+URL = 'https://www.strava.com'
+USERNAME = 'me.bishanga@gmail.com'
+CRD = 'foobar1234'
+STD_WAIT_SECONDS = 20
+MAL_EXIT_CODE = 1
+
+def login_as_subscriber(browser, username, pswd):
+    """ Log in as specified user, in provided browser. """
+    login_button = browser.find_element(By.CLASS_NAME, 'btn-login')
+    login_button.send_keys(Keys.RETURN)
+    browser.implicitly_wait(STD_WAIT_SECONDS)
+    email_textbox = browser.find_element(By.ID, 'email')
+    email_textbox.send_keys(username + Keys.TAB)
+    crd_textbox = browser.find_element(By.ID, 'password')
+    crd_textbox.send_keys(pswd + Keys.RETURN)
+
+def run_selenium_py_website_basics(browser_name):
+    """ Do basic Web UI Actions, using Selenium WebDriver. """
     browser = get_supported_browser(browser_name)
     browser.get(URL)
-    
-    # login & verify
-    login_button = browser.find_element_by_xpath('/html/body/div[2]/header/div/nav/a')
-    login_button.send_keys(Keys.RETURN)
-    
-    # wait for login inputs frame to load.
-    browser.implicitly_wait(20)
-
-    email_textbox = browser.find_elements_by_id('email')[0]
-    print('email_textbox:'); pprint(email_textbox)
-    email_textbox.send_keys(USERNAME + Keys.TAB)
-
-    crd_textbox = browser.find_elements_by_id('password')[0]
-    print('cred_textbox: '); pprint(crd_textbox)
-    crd_textbox.send_keys(CRD + Keys.RETURN)
-    print('Thank you.\n')
-
-    # select an event & verify
+    try:
+        print(f'\nDEBUG: Logging in as "{USERNAME}"')
+        login_as_subscriber(browser, USERNAME, CRD)
+    except Exception as exc:  # pylint: disable=broad-except
+        print('\nDEBUG: Exception observed... Details: See below...')
+        pprint(exc)
+    finally:
+        print('\nDEBUG: Closing browser...')
+        browser.close()
+        print('Thank you.\n')
 
 def get_supported_browser(name):
+    """ Return browser obj or appropriate err_msg. """
     if name.lower() == 'chrome':
         return webdriver.Chrome()
-    elif name.lower() == 'firefox':
+    if name.lower() == 'firefox':
         return webdriver.Firefox()
-    elif name.lower() == 'microsoft':
+    if name.lower() == 'microsoft':
         return webdriver.Edge()
-    else:
-        print("unsupported browser: {}".format(name))
-        exit(1)
+    print(f"Unsupported browser: {name}")
+    sys.exit(MAL_EXIT_CODE)
 
-test_browser_names = ['chrome', 'firefox', 'abc', 123]
-for name in test_browser_names:
-    web_ui_auto_selenium_basics(name)
+def main():
+    """ StartingPoint: Selenium Experiments """
+    ok_browser_names = ['Chrome', 'firefox']
+    for browser in ok_browser_names:
+        print(f'\nDEBUG: Browser: {browser.capitalize()}')
+        run_selenium_py_website_basics(browser)
+
+
+if __name__ == '__main__':
+    main()
