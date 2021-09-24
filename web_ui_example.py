@@ -17,6 +17,7 @@ MAL_EXIT_CODE = 1
 
 def login_as_subscriber(browser, username, pswd):
     """ Log in as specified user, in provided browser. """
+    print(f'\nDEBUG: Logging in as "{username}"')
     login_button = browser.find_element(By.CLASS_NAME, 'btn-login')
     login_button.send_keys(Keys.RETURN)
     browser.implicitly_wait(STD_WAIT_SECONDS)
@@ -25,13 +26,21 @@ def login_as_subscriber(browser, username, pswd):
     crd_textbox = browser.find_element(By.ID, 'password')
     crd_textbox.send_keys(pswd + Keys.RETURN)
 
+def interact_with_cookies_banner(browser, accept=True):
+    print(f'\nDEBUG: Interacting with Cookies Banner: Accept: {accept}')
+    # if accept: click on appropriate button.
+    if accept:
+        cookie_accept_btn = browser.find_element(By.CLASS_NAME, 'btn-accept-cookie-banner')
+        cookie_accept_btn.click()
+
 def run_selenium_py_website_basics(browser_name):
     """ Do basic Web UI Actions, using Selenium WebDriver. """
     browser = get_supported_browser(browser_name)
     browser.get(URL)
     try:
-        print(f'\nDEBUG: Logging in as "{USERNAME}"')
         login_as_subscriber(browser, USERNAME, CRD)
+        for val in [False, True]:
+            interact_with_cookies_banner(browser, accept=val)
     except Exception as exc:  # pylint: disable=broad-except
         print('\nDEBUG: Exception observed... Details: See below...')
         pprint(exc)
