@@ -14,6 +14,8 @@ from configparser import ConfigParser
 from datetime import date, timedelta
 from pprint import pprint
 
+import matplotlib.pyplot as plt
+import numpy as np
 import pytest
 import yaml
 from yaml.loader import SafeLoader
@@ -78,13 +80,20 @@ def get_time_str_n_weeks_away(n_weeks, start_date_str=None):
     # start date
     start_date = date.today() if not start_date_str else date.fromisoformat(start_date_str)
     print('DEBUG: start_date: ', start_date)
-
     # calculate date n weeks forward
     print('DEBUG: n_weeks: ', n_weeks)
     n_wks_date = start_date + timedelta(weeks=n_weeks)
-
     return n_wks_date
 
+def plot_2d_cartesian(x_list, y_list, title=None, xlabel=None, ylabel=None, figwidth=10, figheight=4, out_path=None):
+    fig = plt.figure()
+    fig.set_figwidth(figwidth)
+    fig.set_figheight(figheight)
+    plt.title(title if title else '')
+    plt.xlabel(xlabel if xlabel else '')
+    plt.ylabel(ylabel if ylabel else '')
+    plt.plot(x_list, y_list)
+    plt.savefig(out_path) if out_path else plt.show()
 
 def main():
     """ Misc Experiments, testing modules """
@@ -105,12 +114,43 @@ def main():
     #                 if key in key_names:
     #                     print('section: {}, item: [{}: "{}"]'.format(sect_name, key, item.get(key)))
 
-    default_NTDD = get_time_str_n_weeks_away(10)
-    print('DEBUG: default_NTDD: {}\n'.format(default_NTDD))
+    # default_NTDD = get_time_str_n_weeks_away(10)
+    # print('DEBUG: default_NTDD: {}\n'.format(default_NTDD))
 
-    for start in ['', '2021-09-15', '1975-01-24']:
-        new_NTDD = get_time_str_n_weeks_away(10, start_date_str=start)
-        print('DEBUG: new_NTDD: {}\n'.format(new_NTDD))
+    # for start in ['', '2021-09-15', '1975-01-24']:
+    #     new_NTDD = get_time_str_n_weeks_away(10, start_date_str=start)
+    #     print('DEBUG: new_NTDD: {}\n'.format(new_NTDD))
+
+    # sys.exit(0)
+
+    # Graph a FootBall FreeKick: As a Quadratic Equation: 
+    # y = d(-a(x + b)^2 + c)
+    # where a < 1.0, b ~= 10m, c ~=3m, d ~=1/40
+
+    # xData
+    length_to_goal = 30
+    x_list = list(np.arange(0, length_to_goal+1, 1))
+    print(f'DEBUG: x_list: array: {x_list}')
+
+    # yInfo
+    a = 0.3
+    b = -20.0
+    c = 120.0
+    d = 0.025
+    y_list = [d * (-a * (x_val + b)**2 + c) for x_val in x_list]
+    print(f'DEBUG: y_list: array: {y_list}')
+
+    # Plot: Cartesian, Line
+    heading = 'Experiment: A FootBall FreeKick as a MATHS Equation: y = d(-a(x+b)^2+c)'
+    x_desc = 'Length on FootBallPitch, metres'
+    y_desc = 'Height off Ground, metres'
+    graph_fpath = './data/football_freekick.png'
+    fwidth = 10
+    fheight = 4
+    plot_2d_cartesian(
+        x_list, y_list, title=heading, xlabel=x_desc, ylabel=y_desc,
+        figwidth=fwidth, figheight=fheight, out_path=graph_fpath
+    )
 
     sys.exit(0)
 
