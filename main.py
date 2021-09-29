@@ -137,7 +137,8 @@ def main():
     b = -20.0
     c = 120.0
     d = 0.025
-    y_list = [d * (-a * (x_val + b)**2 + c) for x_val in x_list]
+    dpi = 3
+    y_list = [round((d * (-a * (x_val + b)**2 + c)), dpi) for x_val in x_list]
     print(f'DEBUG: y_list: array: {y_list}')
 
     # Plot: Cartesian, Line
