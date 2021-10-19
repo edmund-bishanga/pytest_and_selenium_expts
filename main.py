@@ -98,21 +98,21 @@ def plot_2d_cartesian(x_list, y_list, title=None, xlabel=None, ylabel=None, figw
 def main():
     """ Misc Experiments, testing modules """
 
-    # # parse .yaml file
-    # config_yml_file = "./configs/sample_config.yml"
-    # yml_config = get_yaml_config(config_yml_file)
-    # print('\nDEBUG: main: yml_config:'); pprint(yml_config)
+    # parse .yaml file
+    config_yml_file = "./configs/sample_config.yml"
+    yml_config = get_yaml_config(config_yml_file)
+    print('\nDEBUG: main: yml_config:'); pprint(yml_config)
 
-    # key_names = ['mode', 'logs']
-    # for sect_name in ['Build', 'Random', None, '', 'Configure']:
-    #     sect_kvs = get_yaml_config_section_kvs(yml_config, sect_name)
-    #     print('\nDEBUG: main: {}: kvs:'.format(sect_name)); pprint(sect_kvs)
-    #     if sect_kvs:
-    #         for item in sect_kvs:
-    #             # print('\nDEBUG: section: {}: item: {}'.format(sect_name, item))
-    #             for key in item.keys():
-    #                 if key in key_names:
-    #                     print('section: {}, item: [{}: "{}"]'.format(sect_name, key, item.get(key)))
+    key_names = ['mode', 'logs']
+    for sect_name in ['Build', 'Random', None, '', 'Configure']:
+        sect_kvs = get_yaml_config_section_kvs(yml_config, sect_name)
+        print('\nDEBUG: main: {}: kvs:'.format(sect_name)); pprint(sect_kvs)
+        if sect_kvs:
+            for item in sect_kvs:
+                # print('\nDEBUG: section: {}: item: {}'.format(sect_name, item))
+                for key in item.keys():
+                    if key in key_names:
+                        print('section: {}, item: [{}: "{}"]'.format(sect_name, key, item.get(key)))
 
     # default_NTDD = get_time_str_n_weeks_away(10)
     # print('DEBUG: default_NTDD: {}\n'.format(default_NTDD))
