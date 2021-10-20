@@ -6,6 +6,7 @@ Misc Experiments:
 + pytest, etc
 """
 # pylint: disable=missing-function-docstring
+# pylint: disable=use-list-literal
 
 import sys
 # imports: Std, 3rdParty, CustomLocal
@@ -19,6 +20,10 @@ import numpy as np
 import pytest
 import yaml
 from yaml.loader import SafeLoader
+
+from log_modules import log_gardening
+
+DEF_ENCODING = 'utf-8'
 
 
 def sum_to_n(num=1):
@@ -35,7 +40,7 @@ def test_sum_to_n(n_input, exp_output):
     assert actual_result == exp_output, err_msg
 
 def print_file_contents(filepath):
-    with open(filepath, 'r') as file:
+    with open(filepath, 'r', encoding=DEF_ENCODING) as file:
         content = file.read()
     delim = '++++++++++++++++++++'
     print(delim)
@@ -58,7 +63,7 @@ def read_ini_config_file(conf_ini_file):
 def get_yaml_config(conf_yml_file):
     """ reads a YAML config file: ideally with one config """
     config = {}
-    with open(conf_yml_file, 'r') as file_obj:
+    with open(conf_yml_file, 'r', encoding=DEF_ENCODING) as file_obj:
         config = yaml.load(file_obj, Loader=SafeLoader)
         pprint(config, width=120)
     assert config, '{}: invalid .yaml config file'.format(conf_yml_file)
@@ -85,7 +90,10 @@ def get_time_str_n_weeks_away(n_weeks, start_date_str=None):
     n_wks_date = start_date + timedelta(weeks=n_weeks)
     return n_wks_date
 
-def plot_2d_cartesian(x_list, y_list, title=None, xlabel=None, ylabel=None, figwidth=10, figheight=4, out_path=None):
+def plot_2d_cartesian(
+        x_list, y_list, title=None, xlabel=None, ylabel=None,
+        figwidth=10, figheight=4, out_path=None, only_show=True
+    ):
     fig = plt.figure()
     fig.set_figwidth(figwidth)
     fig.set_figheight(figheight)
@@ -93,7 +101,32 @@ def plot_2d_cartesian(x_list, y_list, title=None, xlabel=None, ylabel=None, figw
     plt.xlabel(xlabel if xlabel else '')
     plt.ylabel(ylabel if ylabel else '')
     plt.plot(x_list, y_list)
-    plt.savefig(out_path) if out_path else plt.show()
+    if out_path and not only_show:
+        plt.savefig(out_path)
+    else:
+        plt.show()
+    # plt.savefig(out_path) if (out_path and not only_show) else plt.show()
+
+def plot_2d_cartesian_multiple(
+        x_list, y_arrays, y_labels=None, title=None, xlabel=None, ylabel=None,
+        figwidth=10, figheight=4, out_path=None, only_show=True
+    ):
+    fig = plt.figure()
+    fig.set_figwidth(figwidth)
+    fig.set_figheight(figheight)
+    plt.title(title if title else '')
+    plt.xlabel(xlabel if xlabel else '')
+    plt.ylabel(ylabel if ylabel else '')
+    y_colours = { 0: 'red', 1: 'green', 2: 'blue', 3: 'orange', 4: 'purple'}
+    for index, y_list in enumerate(y_arrays):
+        p_colour = y_colours.get(index) if index < len(y_arrays) else y_colours.get(0)
+        y_label = str(y_labels[index]) if (y_labels and index < len(y_arrays)) else 'default'
+        plt.plot(x_list, y_list, color=p_colour, label=y_label)
+    plt.legend()
+    if out_path and not only_show:
+        plt.savefig(out_path)
+    else:
+        plt.show()
 
 def main():
     """ Misc Experiments, testing modules """
@@ -101,18 +134,20 @@ def main():
     # parse .yaml file
     config_yml_file = "./configs/sample_config.yml"
     yml_config = get_yaml_config(config_yml_file)
-    print('\nDEBUG: main: yml_config:'); pprint(yml_config)
+    print('\nDEBUG: main: yml_config:')
+    pprint(yml_config)
 
     key_names = ['mode', 'logs']
     for sect_name in ['Build', 'Random', None, '', 'Configure']:
         sect_kvs = get_yaml_config_section_kvs(yml_config, sect_name)
-        print('\nDEBUG: main: {}: kvs:'.format(sect_name)); pprint(sect_kvs)
+        print(f'\nDEBUG: main: {sect_name}: kvs:')
+        pprint(sect_kvs)
         if sect_kvs:
             for item in sect_kvs:
-                # print('\nDEBUG: section: {}: item: {}'.format(sect_name, item))
+                # print(f'\nDEBUG: section: {sect_name}: item: {item}')
                 for key in item.keys():
                     if key in key_names:
-                        print('section: {}, item: [{}: "{}"]'.format(sect_name, key, item.get(key)))
+                        print(f'section: {sect_name}, item: [{key}: "{item.get(key)}"]')
 
     # default_NTDD = get_time_str_n_weeks_away(10)
     # print('DEBUG: default_NTDD: {}\n'.format(default_NTDD))
@@ -123,7 +158,7 @@ def main():
 
     # sys.exit(0)
 
-    # Graph a FootBall FreeKick: As a Quadratic Equation: 
+    # Graph a FootBall FreeKick: As a Quadratic Equation:
     # y = d(-a(x + b)^2 + c)
     # where a < 1.0, b ~= 10m, c ~=3m, d ~=1/40
 
@@ -133,24 +168,48 @@ def main():
     print(f'DEBUG: x_list: array: {x_list}')
 
     # yInfo
-    a = 0.3
+    # pylint: disable=unused-variable
+    # pylint: disable=invalid-name
+    a_possibles = [0.3, 0.4, 0.5, 0.6, 0.7]
+    b_possibles = [-24, -22, -20, -18, -16]
+    c_possibles = [135, 140, 142, 145, 150]
+    d_possibles = [0.020, 0.021, 0.022, 0.023, 0.024] # wall: 2.0 - 2.5m, goal: 1.8 - 2.0m
+    a = 0.36
     b = -20.0
-    c = 120.0
-    d = 0.025
+    c = 142
+    d = 0.020
     dpi = 3
-    y_list = [round((d * (-a * (x_val + b)**2 + c)), dpi) for x_val in x_list]
-    print(f'DEBUG: y_list: array: {y_list}')
 
-    # Plot: Cartesian, Line
-    heading = 'Experiment: A FootBall FreeKick as a MATHS Equation: y = d(-a(x+b)^2+c)'
+    # Experiment with ranges, identify most realistic/True
+    y_arrays = list()
+    y_variables = ['c', c_possibles]
+    print(f'DEBUG: default variables: a: {a}, b: {b}, c: {c}, d: {d}')
+    for c in y_variables[1]:
+        y_list = [round((d * (-a * (x_val + b)**2 + c)), dpi) for x_val in x_list]
+        print(f'DEBUG: c: {c} y_list: array: {y_list}')
+        y_arrays.append(y_list)
+
+    # Plot: Cartesian, Line: Multiple
+    heading = 'Experiment: A FootBall FreeKick as a MATHS Equation: y = d(-a(x+b)^2+c): var=c'
     x_desc = 'Length on FootBallPitch, metres'
     y_desc = 'Height off Ground, metres'
     graph_fpath = './data/football_freekick.png'
     fwidth = 10
     fheight = 4
+    plot_2d_cartesian_multiple(
+        x_list, y_arrays, y_labels=y_variables[1], title=heading, xlabel=x_desc, ylabel=y_desc,
+        figwidth=fwidth, figheight=fheight, out_path=graph_fpath,
+        only_show=False
+    )
+
+    # Plot: Cartesian, Line: Med(ian)
+    heading = 'Experiment: A FootBall FreeKick as a MATHS Equation: y = d(-a(x+b)^2+c): med'
+    graph_fpath = './data/football_freekick_med.png'
+    med = int((len(y_arrays) - 1) / 2)
     plot_2d_cartesian(
-        x_list, y_list, title=heading, xlabel=x_desc, ylabel=y_desc,
-        figwidth=fwidth, figheight=fheight, out_path=graph_fpath
+        x_list, y_arrays[med], title=heading, xlabel=x_desc, ylabel=y_desc,
+        figwidth=fwidth, figheight=fheight, out_path=graph_fpath,
+        only_show=False
     )
 
     sys.exit(0)

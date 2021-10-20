@@ -33,7 +33,7 @@ DEF_LOGFILE = "./logs/sample_service_log.txt"
 
 
 args = sys.argv[1:]
-assert len(args) >= 1,'Please provide at least one arg: "log_filepath"'
+# assert len(args) >= 1,'Please provide at least one arg: "log_filepath"'
 logfile_path = args[0] if args else DEF_LOGFILE
 
 def readlog_chunks(logfile_path, chunksize=1024):
