@@ -16,6 +16,7 @@ import numpy as np
 
 DEF_ENCODING = 'utf-8'
 
+# pylint: disable=too-many-arguments
 def plot_2d_cartesian(
         x_list, y_list, title=None, xlabel=None, ylabel=None,
         figwidth=10, figheight=4, out_path=None, only_show=True
@@ -27,12 +28,14 @@ def plot_2d_cartesian(
     plt.xlabel(xlabel if xlabel else '')
     plt.ylabel(ylabel if ylabel else '')
     plt.plot(x_list, y_list)
-    if out_path and not only_show:
+    if not only_show and out_path:
         plt.savefig(out_path)
     else:
         plt.show()
     # plt.savefig(out_path) if (out_path and not only_show) else plt.show()
 
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-arguments
 def plot_2d_cartesian_multiple(
         x_list, y_arrays, y_labels=None, title=None, xlabel=None, ylabel=None,
         figwidth=10, figheight=4, out_path=None, only_show=True
@@ -49,10 +52,37 @@ def plot_2d_cartesian_multiple(
         y_label = str(y_labels[index]) if (y_labels and index < len(y_arrays)) else 'default'
         plt.plot(x_list, y_list, color=p_colour, label=y_label)
     plt.legend()
-    if out_path and not only_show:
+    if not only_show and out_path:
         plt.savefig(out_path)
     else:
         plt.show()
+
+def plot_single_line_graph_2d(x_list, y_arrays, index=0):
+    h_prefix = 'Experiment: FootBall FreeKick as a MATHS Equation'
+    heading = f'{h_prefix}: y = d(-a(x+b)^2+c): y_index: {index}'
+    graph_fpath = f'./data/football_freekick_{index}.png'
+    x_desc = 'Length on FootBallPitch, metres'
+    y_desc = 'Height off Ground, metres'
+    fwidth = 10
+    fheight = 4
+    plot_2d_cartesian(
+        x_list, y_arrays[index], title=heading, xlabel=x_desc, ylabel=y_desc,
+        figwidth=fwidth, figheight=fheight, out_path=graph_fpath,
+        only_show=False
+    )
+
+def plot_multi_line_graph_2d(x_list, y_arrays, y_legends=None):
+    heading = 'Experiment: FootBall FreeKick as a MATHS Equation: y = d(-a(x+b)^2+c): multiple'
+    graph_fpath = './data/football_freekick.png'
+    x_desc = 'Length on FootBallPitch, metres'
+    y_desc = 'Height off Ground, metres'
+    fwidth = 10
+    fheight = 4
+    plot_2d_cartesian_multiple(
+        x_list, y_arrays, y_labels=y_legends, title=heading, xlabel=x_desc, ylabel=y_desc,
+        figwidth=fwidth, figheight=fheight, out_path=graph_fpath,
+        only_show=False
+    )
 
 def main():
     """ Misc Experiments, testing modules """
@@ -67,12 +97,14 @@ def main():
     print(f'DEBUG: x_list: array: {x_list}')
 
     # yInfo
-    # pylint: disable=unused-variable
+    # Freekick Dimensions: wall: 2.0 - 2.5m, goal: 1.8 - 2.2m
     # pylint: disable=invalid-name
-    a_possibles = [0.3, 0.4, 0.5, 0.6, 0.7]
-    b_possibles = [-24, -22, -20, -18, -16]
-    c_possibles = [135, 140, 142, 145, 150]
-    d_possibles = [0.020, 0.021, 0.022, 0.023, 0.024] # wall: 2.0 - 2.5m, goal: 1.8 - 2.0m
+    input_data = {
+        "a_possibles": [0.3, 0.4, 0.5, 0.6, 0.7],
+        "b_possibles": [-24, -22, -20, -18, -16],
+        "c_possibles": [135, 140, 142, 145, 150],
+        "d_possibles": [0.020, 0.021, 0.022, 0.023, 0.024]
+    }
     a = 0.36
     b = -20.0
     c = 142
@@ -81,35 +113,19 @@ def main():
 
     # Experiment with ranges, identify most realistic/True
     y_arrays = list()
-    y_variables = ['c', c_possibles]
+    y_varlist = input_data.get('c_possibles')
     print(f'DEBUG: default variables: a: {a}, b: {b}, c: {c}, d: {d}')
-    for c in y_variables[1]:
+    for c in y_varlist:
         y_list = [round((d * (-a * (x_val + b)**2 + c)), dpi) for x_val in x_list]
         print(f'DEBUG: c: {c} y_list: array: {y_list}')
         y_arrays.append(y_list)
 
     # Plot: Cartesian, Line: Multiple
-    heading = 'Experiment: A FootBall FreeKick as a MATHS Equation: y = d(-a(x+b)^2+c): var=c'
-    x_desc = 'Length on FootBallPitch, metres'
-    y_desc = 'Height off Ground, metres'
-    graph_fpath = './data/football_freekick.png'
-    fwidth = 10
-    fheight = 4
-    plot_2d_cartesian_multiple(
-        x_list, y_arrays, y_labels=y_variables[1], title=heading, xlabel=x_desc, ylabel=y_desc,
-        figwidth=fwidth, figheight=fheight, out_path=graph_fpath,
-        only_show=False
-    )
+    med = int((len(y_arrays) - 1) / 2)
+    plot_single_line_graph_2d(x_list, y_arrays, index=med)
 
     # Plot: Cartesian, Line: Med(ian)
-    heading = 'Experiment: A FootBall FreeKick as a MATHS Equation: y = d(-a(x+b)^2+c): med'
-    graph_fpath = './data/football_freekick_med.png'
-    med = int((len(y_arrays) - 1) / 2)
-    plot_2d_cartesian(
-        x_list, y_arrays[med], title=heading, xlabel=x_desc, ylabel=y_desc,
-        figwidth=fwidth, figheight=fheight, out_path=graph_fpath,
-        only_show=False
-    )
+    plot_multi_line_graph_2d(x_list, y_arrays, y_legends=y_varlist)
 
 if __name__ == '__main__':
     main()
