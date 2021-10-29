@@ -1,0 +1,41 @@
+{
+    "serviceStatus": {
+        "apiOptions": [],
+        "apiPath": "serviceStatus",
+        "expSubStrings": ["<?xml ", "encoding='UTF-8'", "<abcApi ", "</abcApi>"]
+    },
+    "sampleDummyRequest": {
+        "apiOptions": [
+            "-X POST", "--header 'Content-Type:text/xml;charset=UTF-8'",
+            "--data-binary ./test_data/sampleDummyRequestSad.xml"
+        ],
+        "apiPath": "sampleDummyRequest",
+        "expSubStrings": ["<?xml ", "encoding='UTF-8'", "<abcApi ", "</abcApi>"]
+    },
+    "createCMA": {
+        "apiOptions": [
+            "-X POST", "--header 'Content-Type:text/xml;charset=UTF-8'",
+            "--data-binary ./test_data/createCMA.xml"
+        ],
+        "apiPath": "createCMA",
+        "expSubStrings": ["<?xml ", "encoding='UTF-8'", "<abcApi ", "</abcApi>"]
+    },
+    "checkJobStatus": {
+        "apiOptions": [
+            "-X POST", "--header 'Content-Type:text/xml;charset=UTF-8'",
+            "--data-binary ./test_data/checkJobStatus.xml"
+        ],
+        "apiPath": "checkJobStatus",
+        "expSubStrings": ["<?xml ", "encoding='UTF-8'", "<abcApi ", "</abcApi>"]
+    },
+    "downloadMakersList1": {
+        "apiOptions": [],
+        "apiPath": "downloadMakersList",
+        "apiParams": {
+            "orgCode": "ABC123",
+            "manufacturerCode": "E03",
+            "productType": "EFG"
+        },
+        "expSubStrings": ["SUCCESS"]
+    }
+}
