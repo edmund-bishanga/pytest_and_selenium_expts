@@ -50,12 +50,10 @@ from bs4 import BeautifulSoup
 
 BIBLE_ROOT_URL = 'https://www.bible.com'
 LANGUAGE = 'en-GB'
-
 BIBLE_VERSIONS = {
     'NKJV': '114',
     'NLT': '116'
 }
-
 BIBLE_BOOKS = {
     'Genesis': 'gen',
     'Exodus': 'exo',
@@ -127,10 +125,12 @@ BIBLE_BOOKS = {
 
 def validate_inputs(inputs):
     """ why: to minimise dirty data inputs e.g. typos """
+    print('\nInput validation:')
     input_format_err_msg = "invalid format: details, see --help/-h"
     if inputs.bible_passage:
         err_msg_bp = "{}: {}".format('-B|--bible-passage', input_format_err_msg)
         assert '.' in inputs.bible_passage, err_msg_bp
+    pprint(inputs)
 
 def get_bible_version_id(version_name):
     ver_err_msg = '-v|--bible-version: should be one of', BIBLE_VERSIONS.keys()
@@ -138,8 +138,7 @@ def get_bible_version_id(version_name):
     version_id = BIBLE_VERSIONS[version_name]
     return version_id
 
-def get_passage_url(passage_str, bible_version):
-    bible_passage_str = passage_str
+def get_passage_url(bible_passage_str, bible_version):
     p_regex = r'(\w+).(\d+)v(\d+)' if 'v' in bible_passage_str else r'(\w+).(\d+)'
     has_end_verse = False
     for char in ['-', '_']:
@@ -148,23 +147,19 @@ def get_passage_url(passage_str, bible_version):
             has_end_verse = True
     matched = re.match(p_regex, bible_passage_str)
     assert matched, 'invalid bible passage: {}\nDetails: -h|--help'.format(bible_passage_str)
-
     book = BIBLE_BOOKS.get(matched.group(1))
     if not book:
         resolver = 'should be one of these: {}'.format(BIBLE_BOOKS.keys())
         assert book, 'Invalid Bible Book format/typo: {}\n{}'.format(bible_passage_str, resolver)
-
     chapter = matched.group(2)
     start_verse = matched.group(3) if 'v' in bible_passage_str else ''
     end_verse = matched.group(4) if has_end_verse else ''
     verses = start_verse
     verses = verses + '-' + end_verse if has_end_verse else verses
     passage_lnk = '.'.join([book, chapter, verses]).strip('.')
-
     version_id = get_bible_version_id(bible_version)
     bible_passage_url = '/'.join([BIBLE_ROOT_URL, LANGUAGE, 'bible', version_id, passage_lnk])
     print('\nDEBUG: bible passage: {}: URL: {}'.format(bible_passage_str, bible_passage_url))
-
     return bible_passage_url
 
 def get_passage_txt_from_url(passage_url, version):
@@ -174,29 +169,44 @@ def get_passage_txt_from_url(passage_url, version):
     html = page.read().decode('utf-8')
     soup = BeautifulSoup(html, 'html.parser')
     entire_txt = soup.get_text()
-
     # extract the relevant passage text
     start_delim = ' ' + version
     start_index = entire_txt.find(start_delim)
     end_delim = version + ':'
     end_index = entire_txt.find(end_delim)
     passage_txt = entire_txt[start_index:end_index].strip(start_delim)
-
     return passage_txt
 
-def main():
-    """ Interactive function: Takes bible passage, provides summary. """
+def verify_mem_verse_in_passage(mem_verse_addr, bible_passage_addr):
+    # via book, chapter, verse
+    in_passage = False
+    def dissect_passage_str(passage_str):
+        book, suffix = passage_str.split('.')
+        chapter, verse_nums = suffix.split('v')
+        print(f'\nDEBUG: book: {book}, chapter: {chapter}, verse_nums: {verse_nums}')
+        return (book, chapter, verse_nums)
+    mem_book, mem_chapter, mem_verse_num = dissect_passage_str(mem_verse_addr)
+    bp_book, bp_chapter, bp_verse_nums = dissect_passage_str(bible_passage_addr)
+    bp_start_verse, bp_last_verse = bp_verse_nums.split('-')
+    if mem_book == bp_book and mem_chapter == bp_chapter \
+       and int(bp_start_verse) <= int(mem_verse_num) <= int(bp_last_verse):
+        in_passage = True
+    if not in_passage:
+        print(f'\nERROR: {mem_verse_addr}: NOT in Bible Passage: {bible_passage_addr}')
+        sys.exit(1)
+
+def get_inputs_from_args():
     args = argparse.ArgumentParser()
     args.add_argument(
         '-B', "--bible-passage", default='John.3v16_19',
-        help='char: Bible Passage in format: {Book}.{Chapter}v{StartVerse}_{EndVerse}'
+        help='char: Bible Passage in format: {Book}.{Chapter}v{StartVerse}-{EndVerse}'
     )
     args.add_argument(
         '-v', "--bible-version", default='NKJV',
         help='char: Version of the Bible, abbr e.g. ESV, KJV'
     )
     args.add_argument(
-        '-M', "--memory-verse", default='John.3v18',
+        '-M', "--memory-verse",
         help='char: Cornerstone MemoryVerse, Today: Here, Now, this season'
     )
     args.add_argument(
@@ -208,29 +218,35 @@ def main():
         help='png: SummaryDiagram of Sermon'
     )
     inputs = args.parse_args()
+    return inputs
 
-    print('\nInput validation:')
+def main():
+    """ Interactive function: Takes bible passage, provides summary. """
+    inputs = get_inputs_from_args()
     validate_inputs(inputs)
-    pprint(inputs)
 
-    # Assemble the Bible Passage link
+    # Assemble the Bible Passage: link and plain text
     # e.g. https://www.bible.com/en-GB/bible/114/jhn.3.16-19
     bible_passage_url = get_passage_url(inputs.bible_passage, inputs.bible_version)
     bible_passage_txt = get_passage_txt_from_url(bible_passage_url, inputs.bible_version)
-    print('\nDEBUG: bible_passage_txt:'); pprint(bible_passage_txt)
+    print('\nDEBUG: bible_passage_txt:')
+    pprint(bible_passage_txt)
 
-    # Get the Memory Verse: link and text
-    mem_verse_url = get_passage_url(inputs.memory_verse, inputs.bible_version)
+    # Get the Memory Verse: link and plain text
+    if inputs.memory_verse:
+        mem_verse_str = inputs.memory_verse
+    else:
+        mem_verse_str = inputs.bible_passage.split('-')[0]
+    verify_mem_verse_in_passage(mem_verse_str, inputs.bible_passage)
+    mem_verse_url = get_passage_url(mem_verse_str, inputs.bible_version)
     mem_verse_txt = get_passage_txt_from_url(mem_verse_url, inputs.bible_version)
-    print('\nDEBUG: mem_verse_txt:'); pprint(mem_verse_txt)
-
+    print('\nDEBUG: mem_verse_txt:')
+    pprint(mem_verse_txt)
     # Collate the Summary
 
     # Add Signature
 
     # Print output
-
-
 
 if __name__ == '__main__':
     main()
