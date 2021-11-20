@@ -146,11 +146,11 @@ def get_passage_url(bible_passage_str, bible_version):
             p_regex = r'(\w+).(\d+)v(\d+)[-|_](\d+)'
             has_end_verse = True
     matched = re.match(p_regex, bible_passage_str)
-    assert matched, 'invalid bible passage: {}\nDetails: -h|--help'.format(bible_passage_str)
+    assert matched, f'invalid bible passage: {bible_passage_str}\nDetails: -h|--help'
     book = BIBLE_BOOKS.get(matched.group(1))
     if not book:
         resolver = 'should be one of these: {}'.format(BIBLE_BOOKS.keys())
-        assert book, 'Invalid Bible Book format/typo: {}\n{}'.format(bible_passage_str, resolver)
+        assert book, f'{bible_passage_str}: Invalid Bible passage: Book typo:\n{resolver}'
     chapter = matched.group(2)
     start_verse = matched.group(3) if 'v' in bible_passage_str else ''
     end_verse = matched.group(4) if has_end_verse else ''
@@ -159,7 +159,7 @@ def get_passage_url(bible_passage_str, bible_version):
     passage_lnk = '.'.join([book, chapter, verses]).strip('.')
     version_id = get_bible_version_id(bible_version)
     bible_passage_url = '/'.join([BIBLE_ROOT_URL, LANGUAGE, 'bible', version_id, passage_lnk])
-    print('\nDEBUG: bible passage: {}: URL: {}'.format(bible_passage_str, bible_passage_url))
+    print(f'\nDEBUG: bible passage: {bible_passage_str}: URL: {bible_passage_url}')
     return bible_passage_url
 
 def get_passage_txt_from_url(passage_url, version):
