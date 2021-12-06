@@ -12,12 +12,12 @@
         "apiPath": "sampleDummyRequest",
         "expSubStrings": ["<?xml ", "encoding='UTF-8'", "<abcApi ", "</abcApi>"]
     },
-    "createCMA": {
+    "createEFG": {
         "apiOptions": [
             "-X POST", "--header 'Content-Type:text/xml;charset=UTF-8'",
-            "--data-binary ./test_data/createCMA.xml"
+            "--data-binary ./test_data/createEFG.xml"
         ],
-        "apiPath": "createCMA",
+        "apiPath": "createEFG",
         "expSubStrings": ["<?xml ", "encoding='UTF-8'", "<abcApi ", "</abcApi>"]
     },
     "checkJobStatus": {
