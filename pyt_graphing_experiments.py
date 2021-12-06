@@ -72,7 +72,7 @@ def plot_single_line_graph_2d(x_list, y_arrays, index=0):
     )
 
 def plot_multi_line_graph_2d(x_list, y_arrays, y_legends=None):
-    heading = 'Experiment: FootBall FreeKick as a MATHS Equation: y = d(-a(x+b)^2+c): multiple'
+    heading = 'Experiment: FootBall FreeKick as a MATHS Equation: y = d(-a(x+b)^2+c): multiple values of c'
     graph_fpath = './data/football_freekick.png'
     x_desc = 'Length on FootBallPitch, metres'
     y_desc = 'Height off Ground, metres'
