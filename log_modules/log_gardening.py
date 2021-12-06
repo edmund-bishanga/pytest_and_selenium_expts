@@ -1,4 +1,4 @@
-#!usr/bin/python
+#!/usr/bin/python
 
 """
 log gardening module:

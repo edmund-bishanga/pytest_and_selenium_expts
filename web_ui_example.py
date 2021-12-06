@@ -1,4 +1,5 @@
-#!usr/bin/python
+#!/usr/bin/python
+
 """
 Web UI Test Automation Experiments: Selenium
 """

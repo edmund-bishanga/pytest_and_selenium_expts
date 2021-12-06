@@ -1,4 +1,4 @@
-#usr/bin/python
+#!/usr/bin/python
 
 print("Hello world")
 print("GOD LOVES YOU")
