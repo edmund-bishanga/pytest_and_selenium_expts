@@ -4,11 +4,14 @@
 Web UI Test Automation Experiments: Selenium
 """
 
+# pylint: disable=missing-function-docstring
+
 import sys
 from pprint import pprint
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
+from msedge.selenium_tools import Edge, EdgeOptions
 
 URL = 'https://www.strava.com'
 USERNAME = 'me.bishanga@gmail.com'
@@ -52,18 +55,21 @@ def run_selenium_py_website_basics(browser_name):
 
 def get_supported_browser(name):
     """ Return browser obj or appropriate err_msg. """
+    # WebDriverLocation: in PATH: C:\Drivers\webdrivers
     if name.lower() == 'chrome':
         return webdriver.Chrome()
     if name.lower() == 'firefox':
         return webdriver.Firefox()
     if name.lower() == 'microsoft':
-        return webdriver.Edge()
+        options = EdgeOptions()
+        options.use_chromium = True
+        return Edge(options=options)
     print(f"Unsupported browser: {name}")
     sys.exit(MAL_EXIT_CODE)
 
 def main():
     """ StartingPoint: Selenium Experiments """
-    ok_browser_names = ['Chrome', 'firefox']
+    ok_browser_names = ['firefox', 'chrome', 'microsoft']
     for browser in ok_browser_names:
         print(f'\nDEBUG: Browser: {browser.capitalize()}')
         run_selenium_py_website_basics(browser)
