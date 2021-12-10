@@ -2,6 +2,7 @@
 
 """
 Web UI Test Automation Experiments: Selenium
++ multiple browser support
 """
 
 # pylint: disable=missing-function-docstring
@@ -17,12 +18,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
 URL = 'https://www.strava.com'
-USERNAME = 'me.bishanga@gmail.com'
-CRD = 'foobar1234'
-STD_WAIT_SECONDS = 20
-MAL_EXIT_CODE = 1
 SUPPORTED_BROWSERS = ['chrome', 'firefox', 'edge']
 ENV_CONFIG_FILE = './configs/env_config.json'
+STD_WAIT_SECONDS = 20
 
 class UnsupportedBrowserException(Exception):
     pass
@@ -47,19 +45,18 @@ def interact_with_cookies_banner(browser, accept=True):
         cookie_accept_btn.click()
 
 def get_user_credentials(username='default_user'):
+    """ Return email and pswd of specified user, as a tuple. """
     with open(ENV_CONFIG_FILE, 'r', encoding='UTF-8') as env_config_file:
         env_config = json.load(env_config_file)
     user_email = env_config.get(username).get('email')
     user_pswd = env_config.get(username).get('pswd')
-    print(f'\nDEBUG: user_email: {user_email}, user_pswd: {user_pswd}')
     return (user_email, user_pswd)
 
 def run_selenium_py_website_basics(browser_name):
-    """ Action basic web UI user actions, using Selenium WebDriver. """
+    """ Execute basic web UI user actions, using Selenium WebDriver. """
     browser = get_supported_browser(browser_name)
     browser.get(URL)
     try:
-        # login_as_subscriber(browser, USERNAME, CRD)
         user_email, user_pswd = get_user_credentials()
         login_as_subscriber(browser, user_email, user_pswd)
         for val in [False, True]:
@@ -101,7 +98,6 @@ def test_get_supported_browser_negative(browser):
     print(f'\nDEBUG: Browser under Test: unsupported: {browser.capitalize()}')
     with pytest.raises(UnsupportedBrowserException):
         get_supported_browser(browser)
-
 
 def main():
     """ StartingPoint: Selenium Experiments """
