@@ -7,13 +7,12 @@ Misc Experiments:
 """
 
 # pylint: disable=missing-function-docstring
-# pylint: disable=use-list-literal
-
+# pylint: disable=unused-import
 
 # imports: Std, 3rdParty, CustomLocal
 import sys
 import time
-from datetime import date, timedelta
+from datetime import datetime, date, timedelta
 from pprint import pprint
 
 import pytest
@@ -39,14 +38,12 @@ def main():
     log_file_analyser = LogGardening(logfile_path=logfile)
 
     logchunks = []
-    limit = 1
-    while len(logchunks) < limit:
+    limit = 3
+    num_chunks = 0
+    while num_chunks < limit:
         chunk = log_file_analyser.readlog_chunks(chunksize=20)
-        print('\nDEBUG: log chunk:')
-        pprint([line for line in chunk])
-        logchunks.append([line for line in chunk])
-    print('\nDEBUG: log chunk:')
-    pprint(logchunks)
+        logchunks.append(list(chunk))
+        num_chunks += 1
 
     log_file_analyser.printlog_lines_head(num_lines=12)
 
@@ -74,9 +71,24 @@ def main():
         try:
             output = log_file_analyser.readlog_head(numbytes)
             print(f'output: {repr(output)}')
-        except AssertionError as AsstErr:
-            pprint(AsstErr)
+        except AssertionError as assert_err:
+            pprint(assert_err)
 
+    # decorators experiment
+    def decor_bookends(func):
+        def wrapper():
+            print(f'pre-decor: time: {datetime.now()}')
+            func()
+            print('post-decor: Done')
+
+        return wrapper
+
+    @decor_bookends
+    def log_chunkler():
+        print('this is the log_chunkler')
+        log_file_analyser.printlog_lines_head(num_lines=10)
+
+    log_chunkler()
 
 if __name__ == '__main__':
     main()
