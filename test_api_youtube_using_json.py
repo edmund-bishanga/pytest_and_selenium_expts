@@ -66,6 +66,7 @@ import re
 from pprint import pprint
 
 import pandas as pd
+import pytest
 import requests
 
 URL_ROOT = "https://www.youtube.com/watch"
@@ -176,7 +177,7 @@ def run_api_check(relevant_inputs):
     print('\nDEBUG: outputs'); pprint(outputs)
     return outputs
 
-
+@pytest.mark.skip(reason='not pytest format, a python test method')
 def test_api_athlete(inputs_json_file):
     """ reads and tests each JSON key-value pair provided """
     # read json input
