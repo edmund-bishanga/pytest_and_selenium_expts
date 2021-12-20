@@ -61,14 +61,14 @@ class LogGardening(object):
         file_generator = (line.strip() for line in open(self.logfile_path, 'r'))
         for line in file_generator:
             if line and line[0].isalnum():
-                print(f"{line}")
+                print(line)
 
     def printlog_lines_head(self, num_lines=10):
         assert isinstance(self.logfile_path, str)
         file_generator = (line.strip() for line in open(self.logfile_path, 'r'))
         line_num = 0
         for line in file_generator:
-            line_num = line_num + 1
+            line_num += 1
             print(f'{line_num}: {line}')
             if line_num == num_lines:
                 break
@@ -80,7 +80,7 @@ class LogGardening(object):
             tail = f.read(f.seek(-numbytes, 2))
         return tail
 
-    def  readlog_head(self, numbytes=100):
+    def readlog_head(self, numbytes=100):
         help_txt = "numbytes: expects: +ve int"
         assert isinstance(numbytes, int) and numbytes > 0, help_txt
         head = ''

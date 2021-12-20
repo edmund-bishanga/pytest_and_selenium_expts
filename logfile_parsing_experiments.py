@@ -24,7 +24,7 @@ DEF_ENCODING = 'utf-8'
 def print_file_contents(filepath):
     with open(filepath, 'r', encoding=DEF_ENCODING) as file:
         content = file.read()
-    delim = '++++++++++++++++++++'
+    delim = '+++' * 8
     print(delim)
     print(content)
     print(delim)
@@ -89,6 +89,7 @@ def main():
         log_file_analyser.printlog_lines_head(num_lines=10)
 
     log_chunkler()
+
 
 if __name__ == '__main__':
     main()
