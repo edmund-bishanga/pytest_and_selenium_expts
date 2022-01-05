@@ -32,8 +32,8 @@ def print_file_contents(filepath):
 def main():
     """ Log Parsing Experiments. """
 
-    # TESTING LOG PARSING/GARDENING MODULE
-    # logfile = "./logs/sample_service_log.txt"
+    # # TESTING LOG PARSING/GARDENING MODULE
+    # # logfile = "./logs/sample_service_log.txt"
     logfile = "./logs/geckodriver.log"
     log_file_analyser = LogGardening(logfile_path=logfile)
 
@@ -90,6 +90,14 @@ def main():
 
     log_chunkler()
 
+    # grep experiment
+    sub_string = 'tag'
+    log = './data/DataSample.ini'
+    max_num_lines = 2
+    grep_output = log_file_analyser.grep_lines_with_sub_string(
+                    sub_string, num_lines=max_num_lines, logfile=log
+                )
+    print(f'grepped_lines: max_num: {max_num_lines} \n{grep_output}')
 
 if __name__ == '__main__':
     main()

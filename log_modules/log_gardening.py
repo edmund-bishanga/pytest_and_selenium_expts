@@ -23,7 +23,7 @@ This module aims to have re-usable methods for doing just that...
 # + logdate_created
 # + logdate_lastmodified
 
-import sys
+import subprocess
 from pprint import pprint
 
 import pytest
@@ -36,7 +36,7 @@ DEF_LOGFILE = "./logs/sample_service_log.txt"
 # # assert len(args) >= 1,'Please provide at least one arg: "log_filepath"'
 # logfile_path = args[0] if args else DEF_LOGFILE
 
-class LogGardening(object):
+class LogGardening():
     """ For Reading and Analysing Log Files """
 
     def __init__(self, logfile_path=None):
@@ -45,6 +45,10 @@ class LogGardening(object):
     def get_logfile_path(self):
         if not self.logfile_path:
             self.logfile_path = DEF_LOGFILE
+        return self.logfile_path
+
+    def set_logfile_path(self, new_log_file):
+        self.logfile_path = new_log_file
         return self.logfile_path
 
     def readlog_chunks(self, chunksize=1024):
@@ -107,18 +111,43 @@ class LogGardening(object):
             chunk = f.read(f.seek(numbytes, 1))
         return chunk
 
-    invalid_numbytes = [-100, 100000000000, 0, -1]
-    # @pytest.mark.skip(reason="not in appropriate syntactic format")
-    @pytest.mark.parametrize('invalid_bytnum', invalid_numbytes)
-    def test_readlog_head_invalid_input(self, invalid_bytnum):
-        with pytest.raises(AssertionError) as exec_info:
-            output = self.readlog_head(DEF_LOGFILE, invalid_bytnum)
-            pprint(repr(exec_info))
-            assert 'numbytes' in exec_info.value or output
+    @staticmethod
+    def run_shell_cmd(cmd):
+        """ Return exit_code and stdout or raise exception. """
+        if isinstance(cmd, str):
+            cmd = cmd.split(' ')
+        proc = dict()
+        try:
+            proc = subprocess.run(
+                cmd, capture_output=True,
+                shell=True, check=True, text=True
+            )
+            # proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+            # output = proc.stdout.read()
+        except subprocess.CalledProcessError as Err:
+            print('\nDEBUG: Err')
+            pprint(Err)
+            raise
+        finally:
+            print('\nDEBUG: proc')
+            pprint(proc)
+            if proc and proc.returncode != 0:
+                print(f'\nDEBUG: stderr: {proc.stderr}')
+        return proc.stdout if proc else ''
 
-    invalid_options = ['123', 'abc', '~', './sample_service_log.txt']
-    @pytest.mark.parametrize("logfile_path", invalid_options)
-    def test_readlog_tail_invalid_path(self, logfile_path):
-        print(f'Testing: {logfile_path}')
-        with pytest.raises(FileNotFoundError):
-            self.readlog_tail(self.logfile_path)
+    # grep for specific sub-string & print first 10 lines showing that
+    def grep_lines_with_sub_string(self, sub_string, num_lines=10, logfile=None):
+        log = logfile if logfile else self.logfile_path
+        n_grepped_lines = list()
+        # grep for substring in specified log, get lines
+        util = 'grep'
+        params = '-iIn'
+        cmd = f'{util} {params} {sub_string} {log}'
+        print(f'cmd: {cmd}')
+        output = self.run_shell_cmd(cmd)
+        # only return first N lines
+        output_lines = str(output).strip('b').strip("'").strip().split('\n')
+        for i in range(num_lines):
+            if i < len(output_lines):
+                n_grepped_lines.append(output_lines[i])
+        return n_grepped_lines
