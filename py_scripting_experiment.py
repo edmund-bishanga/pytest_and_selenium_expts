@@ -10,7 +10,6 @@ import sys
 
 # TEST EXPERIMENT
 # Return expected key presses for a multi-press keypad
-#
 # https://en.wikipedia.org/wiki/Telephone_keypad#/media/File:Telephone-keypad2.svg
 #
 #   -------------------------
@@ -63,7 +62,7 @@ digit_keys = {
 
 def decode_to_num_str(char):
     num_str = 'Err'
-    for num_key,letters in digit_keys.items():
+    for num_key, letters in digit_keys.items():
         if char in letters:
             num_str = str(num_key) * (letters.index(char)+1)
     return num_str
@@ -113,6 +112,7 @@ def run_test(input_text):
     """Test harness for `keys_to_press`.
 
     :param input_text str: Input to function
+    :return test result: bool: Passed/Failed
     """
     expected_output = TESTS.get(input_text)
     print(f'Input :          "{input_text}"')
@@ -125,6 +125,7 @@ def run_test(input_text):
     passed = output == expected_output
     print('PASS' if passed else '!!! ERROR')
     return passed
+
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
