@@ -14,6 +14,7 @@ from pprint import pprint
 import pytest
 from msedge.selenium_tools import Edge, EdgeOptions
 from selenium import webdriver
+from selenium.common.exceptions import SessionNotCreatedException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
@@ -41,7 +42,9 @@ def interact_with_cookies_banner(browser, accept=True):
     print(f'\nDEBUG: Interacting with Cookies Banner: Accept: {accept}')
     # if accept: click on appropriate button.
     if accept:
-        cookie_accept_btn = browser.find_element(By.CLASS_NAME, 'btn-accept-cookie-banner')
+        cookie_accept_btn = browser.find_element(
+            By.CLASS_NAME, 'btn-accept-cookie-banner'
+        )
         cookie_accept_btn.click()
 
 def get_user_credentials(username='default_user'):
@@ -51,23 +54,6 @@ def get_user_credentials(username='default_user'):
     user_email = env_config.get(username).get('email')
     user_pswd = env_config.get(username).get('pswd')
     return (user_email, user_pswd)
-
-def run_selenium_py_website_basics(browser_name):
-    """ Execute basic web UI user actions, using Selenium WebDriver. """
-    browser = get_supported_browser(browser_name)
-    browser.get(URL)
-    try:
-        user_email, user_pswd = get_user_credentials()
-        login_as_subscriber(browser, user_email, user_pswd)
-        for val in [False, True]:
-            interact_with_cookies_banner(browser, accept=val)
-    except Exception as exc:  # pylint: disable=broad-except
-        print('\nDEBUG: Exception observed... Details: See below...')
-        pprint(exc)
-    finally:
-        print('\nDEBUG: Closing browser...')
-        browser.close()
-        print('Thank you.\n')
 
 def get_supported_browser(name):
     """ Return browser obj or appropriate err_msg. """
@@ -87,10 +73,12 @@ def get_supported_browser(name):
 @pytest.mark.parametrize('browser', SUPPORTED_BROWSERS)
 def test_get_supported_browser_positive(browser):
     print(f'\nDEBUG: Browser under Test: supported: {browser.capitalize()}')
+    browser_obj = None
     try:
         browser_obj = get_supported_browser(browser)
     finally:
-        browser_obj.close()
+        if browser_obj:
+            browser_obj.close()
 
 unsupported_browsers = ['safari', 'opera', 'ie']
 @pytest.mark.parametrize('browser', unsupported_browsers)
@@ -98,6 +86,26 @@ def test_get_supported_browser_negative(browser):
     print(f'\nDEBUG: Browser under Test: unsupported: {browser.capitalize()}')
     with pytest.raises(UnsupportedBrowserException):
         get_supported_browser(browser)
+
+def run_selenium_py_website_basics(browser_name):
+    """ Execute basic web UI user actions, using Selenium WebDriver. """
+    browser = None
+    try:
+        browser = get_supported_browser(browser_name)
+        browser.get(URL)
+        user_email, user_pswd = get_user_credentials()
+        login_as_subscriber(browser, user_email, user_pswd)
+        for val in [False, True]:
+            interact_with_cookies_banner(browser, accept=val)
+    except SessionNotCreatedException as exc:  # pylint: disable=broad-except
+        print('\nDEBUG: Exception observed... Details: See below...')
+        pprint(exc)
+    finally:
+        print('\nDEBUG: Closing browser...')
+        if browser:
+            browser.close()
+        print('Thank you.\n')
+
 
 def main():
     """ StartingPoint: Selenium Experiments """
