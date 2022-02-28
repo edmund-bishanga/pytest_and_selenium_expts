@@ -20,7 +20,7 @@ from selenium.webdriver.common.keys import Keys
 
 URL = 'https://www.strava.com'
 SUPPORTED_BROWSERS = ['chrome', 'firefox', 'edge']
-ENV_CONFIG_FILE = './configs/env_config.json'
+ENV_CONFIG_FILE = './env/env_config.json'
 STD_WAIT_SECONDS = 20
 
 class UnsupportedBrowserException(Exception):
