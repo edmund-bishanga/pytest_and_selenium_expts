@@ -9,15 +9,22 @@ API Testing Experiment: Python
 
 # pylint: disable=missing-function-docstring
 
+from pprint import pprint
+
 import pytest
 import requests
 from nose.tools import assert_true
 
+
 ROOT_TEST_URL = 'http://jsonplaceholder.typicode.com'
 ROUTES = {
-    'users': ['address', 'company', 'email', 'id', 'name', 'username', 'website'],
+    'users': [
+        'address', 'company', 'email', 'id', 'name',
+        'username', 'website'
+    ],
     'todos': ['userId', 'id', 'title', 'completed']
 }
+
 
 # run cmd: nosetests -v -s <filename>.py
 def test_api_get_nose(routes=ROUTES.keys()):
@@ -60,8 +67,8 @@ def test_api_post_pytest(name, route = 'users'):
     # form and send request, get response
     api_url = ROOT_TEST_URL + f'/{route}'
     response = requests.post(url=api_url, json=post_data.get(name))
-    print('\nDEBUG: response: POST'); from pprint import pprint; pprint(response.json())
-
+    print('\nDEBUG: response: POST')
+    pprint(response.json())
     # verify response: status_code
     assert response.status_code == 201
 
@@ -93,7 +100,8 @@ def test_api_delete_pytest(name, route = 'users'):
     # form and send request, get response
     api_url = ROOT_TEST_URL + f'/{route}/{str(put_data.get(name).get("id"))}'
     response = requests.delete(url=api_url)
-    print('\nDEBUG: response: DELETE'); from pprint import pprint; pprint(response.json())
+    print('\nDEBUG: response: DELETE')
+    pprint(response.json())
 
     # verify response: status_code
     assert response.status_code == 200
