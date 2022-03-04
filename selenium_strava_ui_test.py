@@ -15,16 +15,20 @@ from pprint import pprint
 import pytest
 from msedge.selenium_tools import Edge, EdgeOptions
 from selenium import webdriver
-from selenium.common.exceptions import SessionNotCreatedException, InvalidSessionIdException, NoSuchElementException
+from selenium.common.exceptions import SessionNotCreatedException
+from selenium.common.exceptions import InvalidSessionIdException
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
 URL = 'https://www.strava.com'
 SUPPORTED_BROWSERS = ['chrome', 'firefox', 'edge']
+OTHER_BROWSERS = ['safari', 'opera', 'ie']
 ENV_CONFIG_FILE = './env/env_config.json'
 STD_WAIT_SECONDS = 20
 SESSION_EXCEPTIONS = (
-    SessionNotCreatedException, InvalidSessionIdException,NoSuchElementException
+    SessionNotCreatedException, InvalidSessionIdException,
+    NoSuchElementException
 )
 
 
