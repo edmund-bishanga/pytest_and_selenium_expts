@@ -20,6 +20,7 @@ import pytest
 from log_modules.log_gardening import LogGardening
 
 DEF_ENCODING = 'utf-8'
+LOGFILE_INI = './data/DataSample.ini'
 
 def print_file_contents(filepath):
     with open(filepath, 'r', encoding=DEF_ENCODING) as file:
@@ -44,7 +45,6 @@ def main():
         chunk = log_file_analyser.readlog_chunks(chunksize=20)
         logchunks.append(list(chunk))
         num_chunks += 1
-
     log_file_analyser.printlog_lines_head(num_lines=12)
 
     valid_h_numbytes = [2, 20, 60, 100]
@@ -92,12 +92,14 @@ def main():
 
     # grep experiment
     sub_string = 'tag'
-    log = './data/DataSample.ini'
-    max_num_lines = 2
+    max_grep_lines = 3
     grep_output = log_file_analyser.grep_lines_with_sub_string(
-                    sub_string, num_lines=max_num_lines, logfile=log
+                    sub_string,
+                    num_lines=max_grep_lines,
+                    logfile=LOGFILE_INI
                 )
-    print(f'grepped_lines: max_num: {max_num_lines} \n{grep_output}')
+    print(f'grepped_lines: max_num: {max_grep_lines} \n{grep_output}')
+
 
 if __name__ == '__main__':
     main()
