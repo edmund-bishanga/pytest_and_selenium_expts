@@ -30,9 +30,9 @@ Outputs:
     + Diagram: GeoHistLitCulturalContext, VerseByVerse,
       TimelessPrinciples, PracticesForTODAYHereNow, MemoryVerse
     + YAHWEH'S Key Principles: Major, minor
-  * The MemoryVerse: Cornerstone of the Passage, faithfully identified... always learning...
+  * The MemoryVerse: Cornerstone of the Passage, faithfully identified...
+  * Keep Learning...
   * A helpful/faithful Song/Hymn: for Dessert...
-
 """
 
 # pylint: disable=line-too-long
@@ -128,7 +128,7 @@ def validate_inputs(inputs):
     print('\nInput validation:')
     input_format_err_msg = "invalid format: details, see --help/-h"
     if inputs.bible_passage:
-        err_msg_bp = "{}: {}".format('-B|--bible-passage', input_format_err_msg)
+        err_msg_bp = f'-B|--bible-passage: {input_format_err_msg}'
         assert '.' in inputs.bible_passage, err_msg_bp
     pprint(inputs)
 
@@ -139,6 +139,9 @@ def get_bible_version_id(version_name):
     return version_id
 
 def get_passage_url(bible_passage_str, bible_version):
+    # p_regex = r'(\w+).(\d+)'
+    # if 'v' in bible_passage_str:
+    #     p_regex = r'(\w+).(\d+)v(\d+)'
     p_regex = r'(\w+).(\d+)v(\d+)' if 'v' in bible_passage_str else r'(\w+).(\d+)'
     has_end_verse = False
     for char in ['-', '_']:
@@ -146,11 +149,13 @@ def get_passage_url(bible_passage_str, bible_version):
             p_regex = r'(\w+).(\d+)v(\d+)[-|_](\d+)'
             has_end_verse = True
     matched = re.match(p_regex, bible_passage_str)
-    assert matched, f'invalid bible passage: {bible_passage_str}\nDetails: -h|--help'
+    p_err_msg = f'Invalid bible passage: {bible_passage_str}\nDetails: -h|--help'
+    assert matched, p_err_msg
     book = BIBLE_BOOKS.get(matched.group(1))
     if not book:
-        resolver = 'should be one of these: {}'.format(BIBLE_BOOKS.keys())
-        assert book, f'{bible_passage_str}: Invalid Bible passage: Book typo:\n{resolver}'
+        resolver = f'should be one of these: {BIBLE_BOOKS.keys()}'
+        b_err_msg = f'Invalid book name: {bible_passage_str}\n{resolver}'
+        assert book, b_err_msg
     chapter = matched.group(2)
     start_verse = matched.group(3) if 'v' in bible_passage_str else ''
     end_verse = matched.group(4) if has_end_verse else ''
@@ -158,8 +163,10 @@ def get_passage_url(bible_passage_str, bible_version):
     verses = verses + '-' + end_verse if has_end_verse else verses
     passage_lnk = '.'.join([book, chapter, verses]).strip('.')
     version_id = get_bible_version_id(bible_version)
-    bible_passage_url = '/'.join([BIBLE_ROOT_URL, LANGUAGE, 'bible', version_id, passage_lnk])
-    print(f'\nDEBUG: bible passage: {bible_passage_str}: URL: {bible_passage_url}')
+    bible_passage_url = '/'.join(
+        [BIBLE_ROOT_URL, LANGUAGE, 'bible', version_id, passage_lnk]
+    )
+    print(f'\nDBG: bible passage: {bible_passage_str}: URL: {bible_passage_url}')
     return bible_passage_url
 
 def get_passage_txt_from_url(passage_url, version):
@@ -183,7 +190,7 @@ def verify_mem_verse_in_passage(mem_verse_addr, bible_passage_addr):
     def dissect_passage_str(passage_str):
         book, suffix = passage_str.split('.')
         chapter, verse_nums = suffix.split('v')
-        print(f'\nDEBUG: book: {book}, chapter: {chapter}, verse_nums: {verse_nums}')
+        print(f'\nDBG: book: {book}, chapter: {chapter}, verse_nums: {verse_nums}')
         return (book, chapter, verse_nums)
     mem_book, mem_chapter, mem_verse_num = dissect_passage_str(mem_verse_addr)
     bp_book, bp_chapter, bp_verse_nums = dissect_passage_str(bible_passage_addr)
@@ -192,14 +199,16 @@ def verify_mem_verse_in_passage(mem_verse_addr, bible_passage_addr):
        and int(bp_start_verse) <= int(mem_verse_num) <= int(bp_last_verse):
         in_passage = True
     if not in_passage:
-        print(f'\nERROR: {mem_verse_addr}: NOT in Bible Passage: {bible_passage_addr}')
+        err_msg = f'{mem_verse_addr}: NOT in Bible Passage: {bible_passage_addr}'
+        print(f'\nERROR: {err_msg}')
         sys.exit(1)
 
 def get_inputs_from_args():
     args = argparse.ArgumentParser()
     args.add_argument(
         '-B', "--bible-passage", default='John.3v16_19',
-        help='char: Bible Passage in format: {Book}.{Chapter}v{StartVerse}-{EndVerse}'
+        help='char: Bible Passage in format: \
+             {Book}.{Chapter}v{StartVerse}-{EndVerse}'
     )
     args.add_argument(
         '-v', "--bible-version", default='NKJV',
@@ -227,8 +236,12 @@ def main():
 
     # Assemble the Bible Passage: link and plain text
     # e.g. https://www.bible.com/en-GB/bible/114/jhn.3.16-19
-    bible_passage_url = get_passage_url(inputs.bible_passage, inputs.bible_version)
-    bible_passage_txt = get_passage_txt_from_url(bible_passage_url, inputs.bible_version)
+    bible_passage_url = get_passage_url(
+        inputs.bible_passage, inputs.bible_version
+    )
+    bible_passage_txt = get_passage_txt_from_url(
+        bible_passage_url, inputs.bible_version
+    )
     print('\nDEBUG: bible_passage_txt:')
     pprint(bible_passage_txt)
 
@@ -239,7 +252,9 @@ def main():
         mem_verse_str = inputs.bible_passage.split('-')[0]
     verify_mem_verse_in_passage(mem_verse_str, inputs.bible_passage)
     mem_verse_url = get_passage_url(mem_verse_str, inputs.bible_version)
-    mem_verse_txt = get_passage_txt_from_url(mem_verse_url, inputs.bible_version)
+    mem_verse_txt = get_passage_txt_from_url(
+        mem_verse_url, inputs.bible_version
+    )
     print('\nDEBUG: mem_verse_txt:')
     pprint(mem_verse_txt)
     # Collate the Summary
