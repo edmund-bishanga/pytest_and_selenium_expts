@@ -24,6 +24,7 @@ def main():
     # cmd = ['grep', '-rnIi', 'import', '.']
     cmd = 'grep -rnIi import .'
     output = run_subprocess_cmd(cmd)
+    print(f'\noutput: object\n: {output}')
 
     output = LogGardening.run_shell_cmd(cmd)
     print(f'\noutput: stdout\n: {output}')

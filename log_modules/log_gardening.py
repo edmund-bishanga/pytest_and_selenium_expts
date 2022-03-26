@@ -116,29 +116,28 @@ class LogGardening():
         """ Return exit_code and stdout or raise exception. """
         if isinstance(cmd, str):
             cmd = cmd.split(' ')
-        proc = dict()
+        result = dict()
         try:
-            proc = subprocess.run(
+            result = subprocess.run(
                 cmd, capture_output=True,
                 shell=True, check=True, text=True
             )
-            # proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-            # output = proc.stdout.read()
+            # result = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+            # output = result.stdout.read()
         except subprocess.CalledProcessError as Err:
             print('\nDEBUG: Err')
             pprint(Err)
             raise
         finally:
-            print('\nDEBUG: proc')
-            pprint(proc)
-            if proc and proc.returncode != 0:
-                print(f'\nDEBUG: stderr: {proc.stderr}')
-        return proc.stdout if proc else ''
+            print('\nDEBUG: result')
+            pprint(result)
+            if result and result.returncode != 0:
+                print(f'\nDEBUG: stderr: {result.stderr}')
+        return result.stdout if result else ''
 
     # grep for specific sub-string & print first 10 lines showing that
     def grep_lines_with_sub_string(self, sub_string, num_lines=10, logfile=None):
         log = logfile if logfile else self.logfile_path
-        n_grepped_lines = list()
         # grep for substring in specified log, get lines
         util = 'grep'
         params = '-iIn'
@@ -147,6 +146,7 @@ class LogGardening():
         output = self.run_shell_cmd(cmd)
         # only return first N lines
         output_lines = str(output).strip('b').strip("'").strip().split('\n')
+        n_grepped_lines = list()
         for i in range(num_lines):
             if i < len(output_lines):
                 n_grepped_lines.append(output_lines[i])
