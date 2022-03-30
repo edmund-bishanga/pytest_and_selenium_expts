@@ -57,7 +57,7 @@ DEF_INPUT_TEST_DATA = {
         'exp_content_str': 'OK',
         'exp_response_timeout_ms': 5000
     },
-    'red_scenario': {
+    'red_scenario1': {
         'runSeqNumber': '-1',
         'utm_medium': '',
         'utm_source': '',
@@ -66,7 +66,16 @@ DEF_INPUT_TEST_DATA = {
         'exp_content_str': '',
         'exp_response_timeout_ms': 3000
     },
-    'amber_scenario': {
+    'red_scenario2': {
+        'runSeqNumber': 'Aa;islkfnafagjia;saf;lj',
+        'utm_medium': '',
+        'utm_source': '',
+        'utm_campaign': '',
+        'exp_status_code': 501,
+        'exp_content_str': '',
+        'exp_response_timeout_ms': 3000
+    },
+    'amber_scenario1': {
         'runSeqNumber': '0',
         'utm_medium': 'inv_email',
         'utm_source': 'inv_resultsemail',
@@ -74,7 +83,16 @@ DEF_INPUT_TEST_DATA = {
         'exp_status_code': 501,
         'exp_content_str': '',
         'exp_response_timeout_ms': 3000
-    }
+    },
+    'amber_scenario2': {
+        'runSeqNumber': 'ABC',
+        'utm_medium': 'inv_email',
+        'utm_source': 'inv_resultsemail',
+        'utm_campaign': 'inv_systememail',
+        'exp_status_code': 501,
+        'exp_content_str': '',
+        'exp_response_timeout_ms': 3000
+    },
 }
 
 # + EquivalencePartitionsData, Priority|CriticalScenarios:
