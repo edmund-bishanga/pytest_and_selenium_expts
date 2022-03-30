@@ -39,8 +39,17 @@ API_REQ_KVP_JOINER = '='
 #   * utm_campaign: str_string: e.g. 'systememail'
 #   ToDo: convert to JSON: readable, scalable
 DEF_INPUT_TEST_DATA = {
-    'green_scenario': {
+    'green_scenario1': {
         'runSeqNumber': '24',
+        'utm_medium': 'email',
+        'utm_source': 'resultsemail',
+        'utm_campaign': 'systememail',
+        'exp_status_code': 200,
+        'exp_content_str': 'OK',
+        'exp_response_timeout_ms': 5000
+    },
+    'green_scenario2': {
+        'runSeqNumber': '100',
         'utm_medium': 'email',
         'utm_source': 'resultsemail',
         'utm_campaign': 'systememail',
@@ -91,7 +100,7 @@ input_req_data = DEF_INPUT_TEST_DATA
 @pytest.mark.parametrize('scenario', input_req_data.keys())
 def test_parkrun_api(scenario):
     scenario_data = DEF_INPUT_TEST_DATA.get(scenario)
-    api_url = ROOT_TEST_URL + TEST_URL_DELIMITER.join(MID_TEST_URL)
+    api_url = ROOT_TEST_URL + '/' + '/'.join(MID_TEST_URL)
     scenario_json_kvps = dict()
     for key in scenario_data:
         if 'exp_' not in key:
