@@ -10,6 +10,8 @@ This module aims to have re-usable methods for doing just that...
 # pylint: disable=redefined-outer-name
 # pylint: disable=invalid-name
 # pylint: disable=missing-function-docstring
+# pylint: disable=use-dict-literal
+# pylint: disable=use-list-literal
 
 # primary APIs
 # + read_chunks
@@ -26,15 +28,11 @@ This module aims to have re-usable methods for doing just that...
 import subprocess
 from pprint import pprint
 
-import pytest
 
 MEM_LIMIT = 10000
 DEF_LOGFILE = "./logs/sample_service_log.txt"
+DEF_ENCODING = 'UTF-8'
 
-
-# args = sys.argv[1:]
-# # assert len(args) >= 1,'Please provide at least one arg: "log_filepath"'
-# logfile_path = args[0] if args else DEF_LOGFILE
 
 class LogGardening():
     """ For Reading and Analysing Log Files """
@@ -52,7 +50,7 @@ class LogGardening():
         return self.logfile_path
 
     def readlog_chunks(self, chunksize=1024):
-        with open(self.logfile_path, 'r') as f:
+        with open(self.logfile_path, 'r', encoding=DEF_ENCODING) as f:
             while True:
                 # read in memory-efficient chunks
                 chunk = f.read(chunksize)
@@ -62,20 +60,22 @@ class LogGardening():
 
     def printlog_lines(self):
         assert isinstance(self.logfile_path, str)
-        file_generator = (line.strip() for line in open(self.logfile_path, 'r'))
-        for line in file_generator:
-            if line and line[0].isalnum():
-                print(line)
+        with open(self.logfile_path, 'r', encoding=DEF_ENCODING) as logfile:
+            file_generator = (line.strip() for line in logfile)
+            for line in file_generator:
+                if line and line[0].isalnum():
+                    print(line)
 
     def printlog_lines_head(self, num_lines=10):
         assert isinstance(self.logfile_path, str)
-        file_generator = (line.strip() for line in open(self.logfile_path, 'r'))
-        line_num = 0
-        for line in file_generator:
-            line_num += 1
-            print(f'{line_num}: {line}')
-            if line_num == num_lines:
-                break
+        with open(self.logfile_path, 'r', encoding=DEF_ENCODING) as logfile:
+            file_generator = (line.strip() for line in logfile)
+            line_num = 0
+            for line in file_generator:
+                line_num += 1
+                print(f'{line_num}: {line}')
+                if line_num == num_lines:
+                    break
 
     def readlog_tail(self, numbytes=100):
         help_txt = "numbytes: expects: +ve integer"
