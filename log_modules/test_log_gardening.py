@@ -13,6 +13,19 @@ from unittest import TestCase as tc
 from .log_gardening import DEF_LOGFILE, LogGardening
 
 
+INVALID_NUMBYTES = [
+    -100,
+    -100000000000,
+    0,
+    -1
+]
+INVALID_PATHS = [
+    '123',
+    'abc',
+    '@',
+    './invalid_dir/sample_service_log.txt'
+]
+
 class TestLogGardening(tc):
     """ UnitTestingClass: for methods in LogGardening Class """
 
@@ -21,8 +34,7 @@ class TestLogGardening(tc):
         self.log_handler = LogGardening(logfile_path=DEF_LOGFILE)
 
     def test_readlog_head_invalid_input(self):
-        invalid_numbytes = [-100, -100000000000, 0, -1]
-        for invalid_num in invalid_numbytes:
+        for invalid_num in INVALID_NUMBYTES:
             print(f'\nTesting: invalid numbytes: {invalid_num}')
             with tc.assertRaises(
                 self, expected_exception=AssertionError
@@ -31,10 +43,7 @@ class TestLogGardening(tc):
             tc.assertTrue(self, 'numbytes' in str(context.exception))
 
     def test_readlog_tail_invalid_paths(self):
-        equiv_partitions = [
-            '123', 'abc', '@', './invalid_dir/sample_service_log.txt'
-        ]
-        for filepath in equiv_partitions:
+        for filepath in INVALID_PATHS:
             print(f'\nTesting: {filepath}')
             self.log_handler.set_logfile_path(filepath)
             with tc.assertRaises(
