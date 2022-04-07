@@ -7,12 +7,11 @@ Misc QA Automation Experiments:
 """
 # pylint: disable=missing-function-docstring
 # pylint: disable=use-list-literal
+# pylint: disable=unused-import
 
 # Imports: Recommended Order: Std, 3rdParty, CustomLocal
 import json
 import os
-import sys
-import time
 from pprint import pprint
 
 import pytest
@@ -34,9 +33,15 @@ ROOT_DEST_URL = f'https://{SERVER_ADDRESS}/api'
 # Config: Settings::Defaults
 DEF_IO_UTIL = 'curl'
 DEF_CERTLESS_OPTIONS = ['-v', '-k']
-DEF_API_OPTIONS = ['-vvv', f'--cert {CLIENT_CERT_PATH}', f'--key {CLIENT_PRKEY_PATH}']
+DEF_API_OPTIONS = [
+    '-vvv',
+    f'--cert {CLIENT_CERT_PATH}',
+    f'--key {CLIENT_PRKEY_PATH}'
+]
 DEF_MTLS_OPTIONS = [
-    f'--cacert {CA_CERT_PATH}', f'--key {CLIENT_PRKEY_PATH}', '--key-type PEM'
+    f'--cacert {CA_CERT_PATH}',
+    f'--key {CLIENT_PRKEY_PATH}',
+    '--key-type PEM'
 ]
 DEF_ENCODING = 'UTF-8'
 DEF_HEADER = f'Content-Type:text/xml;charset={DEF_ENCODING}'
@@ -46,8 +51,13 @@ DEF_TEST_DATA_JSON_FILE = f'{TEST_DATA_ROOT}/example_input_test_data.json'
 DEF_ORG_CODE = 'ABC123'
 DEF_FACTORY_CODE = 'E03'
 DEF_PROD_CODE = 'EFG'
-DEF_EXP_EPR_API_RESPONSE = ['<?xml ', f'encoding="{DEF_ENCODING}"', '<abcApi ', '</abcApi>']
-test_data = {
+DEF_EXP_EPR_API_RESPONSE = [
+    '<?xml ',
+    f'encoding="{DEF_ENCODING}"',
+    '<abcApi ',
+    '</abcApi>'
+]
+DEF_TEST_DATA = {
     'serviceStatus': {
         'apiOptions': [],
         'apiPath': 'serviceStatus',
@@ -103,10 +113,10 @@ def set_default_api_options(cert_status, add_ca_cert):
 
 def get_json_test_data(json_file):
     with open(json_file, 'r', encoding=DEF_ENCODING) as inputs_file:
-
-        test_data = json.load(inputs_file)
-    print('\nDEBUG: test_data: JSONDict'); pprint(test_data)
-    return test_data
+        t_data = json.load(inputs_file)
+    print('\nDEBUG: test_data: JSONDict')
+    pprint(t_data)
+    return t_data
 
 def add_api_params_to_path(api_path, api_params_dict):
     # apiPath + '?' + param1=val1 + '&' + 'param2=val2' + ... + '&' + 'paramN=valN'
@@ -114,7 +124,9 @@ def add_api_params_to_path(api_path, api_params_dict):
     api_path += '?' + '&'.join(api_param_pairs)
     return api_path
 
-def form_valid_api_call_str(api_path_key, test_data, add_ca_cert=False, cert_status='secure_cert'):
+def form_valid_api_call_str(
+        api_path_key, test_data, add_ca_cert=False, cert_status='secure_cert'
+    ):
     _def_options = set_default_api_options(cert_status, add_ca_cert)
     api_options = test_data.get(api_path_key).get('apiOptions')
     _options_str = ' '.join(_def_options + api_options)
@@ -125,9 +137,9 @@ def form_valid_api_call_str(api_path_key, test_data, add_ca_cert=False, cert_sta
     if api_params_dict:
         api_path_suffix = add_api_params_to_path(api_path_suffix, api_params_dict)
 
-    apiCall = f'{DEF_IO_UTIL} {_options_str} {ROOT_DEST_URL}/{api_path_suffix}'
-    print(f'\nDEBUG: {api_path_key}: API Call: \n{apiCall}')
-    return apiCall
+    api_call = f'{DEF_IO_UTIL} {_options_str} {ROOT_DEST_URL}/{api_path_suffix}'
+    print(f'\nDEBUG: {api_path_key}: API Call: \n{api_call}')
+    return api_call
 
 def get_sample_response_data(rfile_path):
     with open(rfile_path, encoding=DEF_ENCODING, mode='r') as res_file:
@@ -148,7 +160,7 @@ def verify_api_response(api_path, response, exp_response_substrs):
         assert must_contain_str in response, err_msg
 
 def verify_mtls_handshake_completed(mtls_response, cert_status):
-    help_txt = f'Pls Check mTLS SetUp|Config|Certs e.g. erroneous Client Cert'
+    help_txt = 'Pls Check mTLS SetUp|Config|Certs e.g. erroneous Client Cert'
     err_msg = f'mTLS HandShake Err: {help_txt}\nDetails:\n{mtls_response}'
     if cert_status in ['no_cert']:
         assert not mtls_response, err_msg
@@ -157,24 +169,25 @@ def verify_mtls_handshake_completed(mtls_response, cert_status):
 
 
 # Key TestCases
-test_data = get_json_test_data(DEF_TEST_DATA_JSON_FILE)
+js_test_data = get_json_test_data(DEF_TEST_DATA_JSON_FILE)
 
 cert_test_coverage = ['no_cert', 'insecure_cert', 'secure_cert']
 @pytest.mark.parametrize('cert_status', cert_test_coverage)
-def test_mutualTLS_config_no_cert_no_response(cert_status):
+def test_mutual_tls_config_no_cert_no_response(cert_status):
     api_str = form_valid_api_call_str(
-        'serviceStatus', test_data, add_ca_cert=False, cert_status=cert_status
+        'serviceStatus', js_test_data,
+        add_ca_cert=False, cert_status=cert_status
     )
     mtls_response = run_api_call(api_str)
     verify_mtls_handshake_completed(mtls_response, cert_status)
 
-@pytest.mark.parametrize('api_path_key', test_data.keys())
-def test_api_call_mTLS_valid(api_path_key):
+@pytest.mark.parametrize('api_path_key', js_test_data.keys())
+def test_api_call_mtls_valid(api_path_key):
     api_str = form_valid_api_call_str(
-        api_path_key, test_data, cert_status='insecure_cert'
+        api_path_key, js_test_data, cert_status='insecure_cert'
     )
     response = run_api_call(api_str)
-    exp_substrs = test_data.get(api_path_key).get('expSubStrings')
+    exp_substrs = js_test_data.get(api_path_key).get('expSubStrings')
     verify_api_response(
         api_path_key, response, exp_response_substrs=exp_substrs
     )

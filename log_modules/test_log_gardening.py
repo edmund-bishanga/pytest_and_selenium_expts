@@ -26,6 +26,7 @@ INVALID_PATHS = [
     './invalid_dir/sample_service_log.txt'
 ]
 
+
 class TestLogGardening(tc):
     """ UnitTestingClass: for methods in LogGardening Class """
 
