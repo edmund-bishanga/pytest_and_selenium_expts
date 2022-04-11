@@ -119,9 +119,9 @@ def get_json_test_data(json_file):
     return t_data
 
 def add_api_params_to_path(api_path, api_params_dict):
-    # apiPath + '?' + param1=val1 + '&' + 'param2=val2' + ... + '&' + 'paramN=valN'
-    api_param_pairs = [f'{param}={val}' for param, val in api_params_dict.items()]
-    api_path += '?' + '&'.join(api_param_pairs)
+    # apiPath + '?' + prm1=val1 + '&' + 'prm2=val2' + ... + '&' + 'prmN=valN'
+    param_pairs = [f'{param}={val}' for param, val in api_params_dict.items()]
+    api_path += '?' + '&'.join(param_pairs)
     return api_path
 
 def form_valid_api_call_str(
@@ -133,9 +133,9 @@ def form_valid_api_call_str(
     print(f'\nDEBUG: api_options_str: {_options_str}')
 
     api_path_suffix = test_data.get(api_path_key).get('apiPath')
-    api_params_dict = test_data.get(api_path_key).get('apiParams')
-    if api_params_dict:
-        api_path_suffix = add_api_params_to_path(api_path_suffix, api_params_dict)
+    params_dict = test_data.get(api_path_key).get('apiParams')
+    if params_dict:
+        api_path_suffix = add_api_params_to_path(api_path_suffix, params_dict)
 
     api_call = f'{DEF_IO_UTIL} {_options_str} {ROOT_DEST_URL}/{api_path_suffix}'
     print(f'\nDEBUG: {api_path_key}: API Call: \n{api_call}')
