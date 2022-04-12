@@ -36,29 +36,22 @@ def print_file_contents(filepath):
     print(content)
     print(delim)
 
+def read_xml_tree_nodes(xml_tree):
+    root = xml_tree.getroot()
+    for child in root:
+        print(child.tag, child.attrib)
+
+def find_xpath_in_xml_tree(xpath, xml_tree):
+    root = xml_tree.getroot()
+    for child_item in root.findall(xpath):
+        print(f'{child_item.tag}: {child_item.text}')
+
 def parse_xml_config_file_to_obj(conf_xml_file):
     # REF: https://www.datacamp.com/community/tutorials/python-xml-elementtree
     # parse and return a usable object
     conf_xml_tree = ET.parse(conf_xml_file)
-    pprint(conf_xml_tree)
     root = conf_xml_tree.getroot()
-    pprint(root)
     print(ET.tostring(root, encoding='utf-8').decode('utf-8'))
-
-    # read/navigate xml tree
-    for child in root:
-        print(child.tag, child.attrib)
-
-    # read specific xpath detail
-    xpath1 = './Stock/retail'
-    for item in root.findall(xpath1):
-        print(item.tag)
-        print(item.text)
-
-    # read specific section: loop through
-    for child_item in root.findall('./Stock/*'):
-        print(f'{child_item.tag}: {child_item.text}')
-
     return conf_xml_tree
 
 def parse_ini_config_file_to_obj(conf_ini_file):
@@ -133,7 +126,14 @@ def main():
     conf_xml_file = './data/DataSample.xml'
     print_file_contents(conf_xml_file)
     xml_tree_obj = parse_xml_config_file_to_obj(conf_xml_file)
-    pprint(xml_tree_obj)
+    # read/navigate xml tree
+    read_xml_tree_nodes(xml_tree_obj)
+    # read specific xpath detail
+    xpaths = ['./Stock/retail', './Stock/*']
+    for xpath in xpaths:
+        print('\n')
+        find_xpath_in_xml_tree(xpath, xml_tree_obj)
+
 
 if __name__ == '__main__':
     main()
