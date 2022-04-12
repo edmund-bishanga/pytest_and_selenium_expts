@@ -1,4 +1,4 @@
-# Example Testbed
+# Example Testbed: Anonymised
 testbed:
     name: example_testbed
     servers:
@@ -9,7 +9,7 @@ testbed:
             username: "username"
             password: "password"
         ntp:
-            server: 102.0.0.102
+            server: 101.0.0.101
 
 devices:
     ott-tb1-n7k3:
@@ -26,15 +26,15 @@ devices:
         connections:
             a:
                 protocol: telnet
-                ip: "10.85.87.25"
+                ip: "10.45.27.25"
                 port: 2003
             b:
                 protocol: telnet
-                ip: "10.85.87.25"
+                ip: "10.45.27.25"
                 port: 2004
             alt:
                 protocol : telnet
-                ip : "5.25.25.3"
+                ip : "5.28.27.3"
             clean:
                 pre_clean: |
                    switchname %{self}
