@@ -10,6 +10,7 @@ Misc Experiments:
 # pylint: disable=unused-import
 
 # imports: Std, 3rdParty, CustomLocal
+import os
 import sys
 import time
 import xml.etree.ElementTree as ET
@@ -42,9 +43,12 @@ def read_xml_tree_nodes(xml_tree):
         print(child.tag, child.attrib)
 
 def find_xpath_in_xml_tree(xpath, xml_tree):
+    found_items = list()
     root = xml_tree.getroot()
     for child_item in root.findall(xpath):
+        found_items.append(child_item)
         print(f'{child_item.tag}: {child_item.text}')
+    return found_items
 
 def parse_xml_config_file_to_obj(conf_xml_file):
     # REF: https://www.datacamp.com/community/tutorials/python-xml-elementtree
@@ -53,6 +57,13 @@ def parse_xml_config_file_to_obj(conf_xml_file):
     root = conf_xml_tree.getroot()
     print(ET.tostring(root, encoding='utf-8').decode('utf-8'))
     return conf_xml_tree
+
+def get_all_xml_items_in_xpaths(xpaths, xml_tree):
+    xpath_items = dict()
+    for xpath in xpaths:
+        lfound_items = find_xpath_in_xml_tree(xpath, xml_tree)
+        xpath_items.update({xpath : (lfound_items if lfound_items else '')})
+    return xpath_items
 
 def parse_ini_config_file_to_obj(conf_ini_file):
     cfg = ConfigParser()
@@ -126,13 +137,28 @@ def main():
     conf_xml_file = './data/DataSample.xml'
     print_file_contents(conf_xml_file)
     xml_tree_obj = parse_xml_config_file_to_obj(conf_xml_file)
-    # read/navigate xml tree
+
+    # XML: read/navigate xml tree
     read_xml_tree_nodes(xml_tree_obj)
-    # read specific xpath detail
+
+    # XML: read specific xpath detail
     xpaths = ['./Stock/retail', './Stock/*']
-    for xpath in xpaths:
-        print('\n')
-        find_xpath_in_xml_tree(xpath, xml_tree_obj)
+    xpaths_items = get_all_xml_items_in_xpaths(xpaths, xml_tree_obj)
+    pprint(xpaths_items)
+
+    # XML: modify xml detail
+    for id_item in xml_tree_obj.getroot().findall('id'):
+        new_id = int(id_item.text) + 3
+        id_item.text = str(new_id)
+        id_item.set('new_tag', 'true')
+        id_item['new_tag2'] = 'false'
+        pprint(id_item)
+
+    # XML: write to file
+    dest_path = './data/obj_written_to.xml'
+    os.remove(dest_path)
+    print(f'Writing XML file: {dest_path}')
+    xml_tree_obj.write(dest_path)
 
 
 if __name__ == '__main__':
