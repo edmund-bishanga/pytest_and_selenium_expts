@@ -18,6 +18,7 @@ from pprint import pprint
 import pytest
 
 DEF_ENCODING = 'utf-8'
+DEF_NUMWEEKS = 10
 
 
 def sum_to_n(num=1):
@@ -50,11 +51,11 @@ def get_time_str_n_weeks_away(n_weeks, start_date_str=None):
 def main():
     """ Experiment with Dates, Time. """
 
-    default_due_date = get_time_str_n_weeks_away(10)
+    default_due_date = get_time_str_n_weeks_away(DEF_NUMWEEKS)
     print('DEBUG: default_due_date: {}\n'.format(default_due_date))
 
     for start in ['', '2021-09-15', '1975-01-24']:
-        new_NTDD = get_time_str_n_weeks_away(10, start_date_str=start)
+        new_NTDD = get_time_str_n_weeks_away(DEF_NUMWEEKS, start_date_str=start)
         print('DEBUG: new_NTDD: {}\n'.format(new_NTDD))
 
 
