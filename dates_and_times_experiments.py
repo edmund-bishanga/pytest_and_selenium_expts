@@ -7,10 +7,8 @@ Misc Experiments:
 """
 
 # pylint: disable=missing-function-docstring
-# pylint: disable=use-list-literal
 
 # imports: Std, 3rdParty, CustomLocal
-import sys
 import time
 from datetime import date, timedelta
 from pprint import pprint
@@ -19,7 +17,12 @@ import pytest
 
 DEF_ENCODING = 'utf-8'
 DEF_NUMWEEKS = 10
-
+SAMPLE_DATES = ['', '2021-09-15', '1975-01-24']
+SAMPLE_JSON_DICT = {
+        'a': {'tc_id': 'a', 'key1': 'aa', 'key2': 'bba3', 'key3': 'cc'},
+        'b': {'tc_id': 'b', 'key1': 'aab', 'key2': 'bb4', 'key3': 'ccb'},
+        'c': {'tc_id': 'c', 'key1': 'aac', 'key2': 'bb1', 'key3': 'ccc'}
+    }
 
 def sum_to_n(num=1):
     total = 0
@@ -48,15 +51,38 @@ def get_time_str_n_weeks_away(n_weeks, start_date_str=None):
     n_wks_date = start_date + timedelta(weeks=n_weeks)
     return n_wks_date
 
+def order_dlist_by_shared_kvalue(dlist, order_by=None, direction=None):
+    # order dlist, by key value
+    ordered_dlist = dlist
+    ordered_dlist.sort(key=lambda item: item.get(order_by))
+    return ordered_dlist
+
+def transform_json_dict_to_dlist(json_dict, hlabel='name'):
+    for key in json_dict:
+        json_dict.get(key).update({hlabel: key})
+    dlist = [json_dict.get(key) for key in json_dict]
+    return dlist
+
+def dbg_print(obj, text):
+    print(f'\nDEBUG: {text}:')
+    pprint(obj)
+
 def main():
     """ Experiment with Dates, Time. """
 
+    # Evaluate dates and weeks diffs
     default_due_date = get_time_str_n_weeks_away(DEF_NUMWEEKS)
-    print('DEBUG: default_due_date: {}\n'.format(default_due_date))
+    dbg_print(default_due_date, 'default_due_date')
+    for start in SAMPLE_DATES:
+        new_ntdd = get_time_str_n_weeks_away(DEF_NUMWEEKS, start_date_str=start)
+        dbg_print(new_ntdd, 'new_NTDD')
 
-    for start in ['', '2021-09-15', '1975-01-24']:
-        new_NTDD = get_time_str_n_weeks_away(DEF_NUMWEEKS, start_date_str=start)
-        print('DEBUG: new_NTDD: {}\n'.format(new_NTDD))
+    # Transform a json_dict into a dlist
+    dlist = transform_json_dict_to_dlist(SAMPLE_JSON_DICT, hlabel='tc_id')
+    # dlist: sort by values of a specific key
+    for key in ['tc_id', 'key2', 'key1']:
+        ordered_dlist = order_dlist_by_shared_kvalue(dlist, order_by=key)
+        dbg_print(ordered_dlist, f'ordered_list: by values of {key}')
 
 
 if __name__ == '__main__':
