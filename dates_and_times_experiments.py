@@ -44,7 +44,9 @@ def convert_epoch_to_datetime(epoch_time):
 
 def get_time_str_n_weeks_away(n_weeks, start_date_str=None):
     # start date
-    start_date = date.today() if not start_date_str else date.fromisoformat(start_date_str)
+    start_date = date.today()
+    if start_date_str:
+        start_date = date.fromisoformat(start_date_str)
     print('DEBUG: start_date: ', start_date)
     # calculate date n weeks forward
     print('DEBUG: n_weeks: ', n_weeks)
