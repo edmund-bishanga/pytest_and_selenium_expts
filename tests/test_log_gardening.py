@@ -6,11 +6,16 @@ Unit Tests for methods in Class: log_gardening.LogGardening
   python -m unittest discover -v -s <test_dir>
 + or via pytest:
   python -m pytest -v <test_dir>
+
++ to import custom modules seamlessly:
+  * package directories should have empty __init__.py file
+  * add parent/root repo dir to PYTHONPATH or Sys.PATH
+    searchable by python import function
 """
 
 from unittest import TestCase as tc
 
-from log_gardening import DEF_LOGFILE, LogGardening
+from log_modules.log_gardening import DEF_LOGFILE, LogGardening
 
 
 INVALID_NUMBYTES = [
