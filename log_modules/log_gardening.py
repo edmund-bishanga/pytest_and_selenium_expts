@@ -151,3 +151,18 @@ class LogGardening():
             if i < len(output_lines):
                 n_grepped_lines.append(output_lines[i])
         return n_grepped_lines
+
+
+if __name__ == '__main__':
+    logfile = "../logs/geckodriver.log"
+    log_file_analyser = LogGardening(logfile_path=logfile)
+    print(f'\nINFO: logfile used: {log_file_analyser.logfile_path}')
+
+    logchunks = []
+    limit = 3
+    num_chunks = 0
+    while num_chunks < limit:
+        chunk = log_file_analyser.readlog_chunks(chunksize=20)
+        logchunks.append(list(chunk))
+        num_chunks += 1
+    log_file_analyser.printlog_lines_head(num_lines=12)
