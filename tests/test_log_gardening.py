@@ -12,11 +12,11 @@ Unit Tests for methods in Class: log_gardening.LogGardening
   * add parent/root repo dir to PYTHONPATH or Sys.PATH
     searchable by python import function
 """
-
+import io
+from contextlib import redirect_stdout
 from unittest import TestCase as tc
 
 from log_modules.log_gardening import DEF_LOGFILE, LogGardening
-
 
 INVALID_NUMBYTES = [
     -100,
@@ -38,6 +38,27 @@ class TestLogGardening(tc):
     def setUp(self):
         # create relevant|necessary obj instances & pre-requisites
         self.log_handler = LogGardening(logfile_path=DEF_LOGFILE)
+
+    def test_printlog_lines_head_valid(self):
+        # for each valid input set, validate num_lines printed
+        valid_num_lines  = [1, 10, 30, 90, 120]
+        for num_lines in valid_num_lines:
+            print(f'\nDEBUG: num_lines: {num_lines}')
+            with io.StringIO() as buffer, redirect_stdout(buffer):
+                self.log_handler.printlog_lines_head(num_lines)
+                print(f'\nDEBUG: stdout buffer: {buffer.getvalue()}')
+                tc.assertIn(
+                    self,
+                    member='head',
+                    container=buffer.getvalue(),
+                    msg='log: missing content'
+                )
+                tc.assertIsInstance(
+                    self,
+                    obj=buffer.getvalue(),
+                    cls=str,
+                    msg='log: content: invalid type'
+                )
 
     def test_readlog_head_invalid_input(self):
         for invalid_num in INVALID_NUMBYTES:
