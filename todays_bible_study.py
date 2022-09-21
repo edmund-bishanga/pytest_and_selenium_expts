@@ -40,7 +40,7 @@ Outputs:
 # pylint: disable=unused-import
 # pylint: disable=missing-function-docstring
 
-import argparse
+import argparse as ap
 import re
 import sys
 from pprint import pprint
@@ -190,11 +190,11 @@ def verify_mem_verse_in_passage(mem_verse_addr, bible_passage_addr):
     def dissect_passage_str(passage_str):
         book, suffix = passage_str.split('.')
         chapter, verse_nums = suffix.split('v')
-        print(f'\nDBG: book: {book}, chapter: {chapter}, verse_nums: {verse_nums}')
         return (book, chapter, verse_nums)
     mem_book, mem_chapter, mem_verse_num = dissect_passage_str(mem_verse_addr)
     bp_book, bp_chapter, bp_verse_nums = dissect_passage_str(bible_passage_addr)
-    bp_start_verse, bp_last_verse = bp_verse_nums.split('-')
+    delim = '-' if '-' in bp_verse_nums else '_'
+    bp_start_verse, bp_last_verse = bp_verse_nums.split(delim)
     if mem_book == bp_book and mem_chapter == bp_chapter \
        and int(bp_start_verse) <= int(mem_verse_num) <= int(bp_last_verse):
         in_passage = True
@@ -204,7 +204,7 @@ def verify_mem_verse_in_passage(mem_verse_addr, bible_passage_addr):
         sys.exit(1)
 
 def get_inputs_from_args():
-    args = argparse.ArgumentParser()
+    args = ap.ArgumentParser(formatter_class=ap.ArgumentDefaultsHelpFormatter)
     args.add_argument(
         '-B', "--bible-passage", default='John.3v16_19',
         help='char: Bible Passage in format: \
@@ -249,7 +249,8 @@ def main():
     if inputs.memory_verse:
         mem_verse_str = inputs.memory_verse
     else:
-        mem_verse_str = inputs.bible_passage.split('-')[0]
+        delim = '-' if '-' in inputs.bible_passage else '_'
+        mem_verse_str = inputs.bible_passage.split(delim)[0]
     verify_mem_verse_in_passage(mem_verse_str, inputs.bible_passage)
     mem_verse_url = get_passage_url(mem_verse_str, inputs.bible_version)
     mem_verse_txt = get_passage_txt_from_url(

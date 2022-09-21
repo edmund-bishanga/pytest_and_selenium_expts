@@ -2,7 +2,7 @@
 """ Experiments regarding miscellaneous linux cmds: run via python. """
 
 # imports
-import argparse
+import argparse as ap
 import subprocess
 from pprint import pprint
 
@@ -10,7 +10,7 @@ from log_modules.log_gardening import LogGardening
 
 # helper functions
 def get_inputs_from_args():
-    args = argparse.ArgumentParser()
+    args = ap.ArgumentParser(formatter_class=ap.ArgumentDefaultsHelpFormatter)
     args.add_argument(
         '-s', "--search-string", default='Bible',
         help='str: grep search string'

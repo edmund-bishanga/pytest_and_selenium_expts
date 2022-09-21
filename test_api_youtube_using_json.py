@@ -59,7 +59,7 @@ Interactive Script:
 # pylint: disable=unused-import
 # pylint: disable=invalid-name
 
-import argparse
+import argparse as ap
 import json
 import sys
 import re
@@ -224,7 +224,7 @@ def main():
     """ Interactive function: API Testing. """
 
     # Input validation
-    args = argparse.ArgumentParser()
+    args = ap.ArgumentParser(formatter_class=ap.ArgumentDefaultsHelpFormatter)
     args.add_argument(
         '-f', "--input-file", default='./data/test_data_youtube_web_api.json',
         help='str: path to JSON inputs file'
