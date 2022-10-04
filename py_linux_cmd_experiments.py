@@ -39,7 +39,7 @@ def main():
     output = run_subprocess_cmd(cmd)
     print(f'\noutput: object\n: {output}')
 
-    output = LogGardening.run_shell_cmd(cmd)
+    output = LogGardening.run_shell_cmd(cmd).stdout
     print(f'\noutput: stdout\n: {output}')
 
 if __name__ == "__main__":
