@@ -111,7 +111,7 @@ class LogGardening():
         """Parses log and returns top selection.
 
         Args:
-            numbytes (int): number of bytes to output
+            numbytes (int, optional): number of bytes to output
 
         Returns:
             str: selection of log file, first n bytes.
@@ -218,6 +218,17 @@ class LogGardening():
         return n_grepped_lines
 
     def collect_n_log_chunks(self, n_chunks=3, chunk_bsize=100):
+        """Gets a finite number of sized log chunks from self.logfile_path
+
+        Args:
+            n_chunks (int, optional): number of chunks to return.
+                                      Defaults to 3.
+            chunk_bsize (int, optional): size of each chunk: bytes.
+                                         Defaults to 100.
+
+        Returns:
+            list: collection of n chunks of log text
+        """
         logchunks = []
         i_chunks = 0
         chunk_bsize = 100
