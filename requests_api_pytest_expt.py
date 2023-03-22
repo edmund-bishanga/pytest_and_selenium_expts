@@ -24,6 +24,7 @@ ROUTES = {
     ],
     'todos': ['userId', 'id', 'title', 'completed']
 }
+DEF_TIMEOUT = 120
 
 
 # run cmd: nosetests -v -s <filename>.py
@@ -31,7 +32,7 @@ def test_api_get_nose(routes=ROUTES.keys()):
     for route in routes:
         # Send a request to the real API server and store the response.
         api_url = ROOT_TEST_URL + f'/{route}'
-        response = requests.get(api_url, params=None)
+        response = requests.get(api_url, params=None, timeout=DEF_TIMEOUT)
 
         # verify response: status_code
         assert_true(response.ok)
@@ -48,7 +49,7 @@ def test_api_get_nose(routes=ROUTES.keys()):
 def test_api_get_pytest(route):
     # Send a request to the real API server and store the response.
     api_url = ROOT_TEST_URL + f'/{route}'
-    response = requests.get(api_url, params=None)
+    response = requests.get(api_url, params=None, timeout=DEF_TIMEOUT)
 
     # verify response: status_code
     assert response.status_code == 200
@@ -65,12 +66,15 @@ post_data = {
     'james': {'name': 'James BISHANGA', 'email': 'james.bishanga@abc.co.uk'}
 }
 
-
 @pytest.mark.parametrize('name', post_data.keys())
 def test_api_post_pytest(name, route='users'):
     # form and send request, get response
     api_url = ROOT_TEST_URL + f'/{route}'
-    response = requests.post(url=api_url, json=post_data.get(name))
+    response = requests.post(
+        url=api_url,
+        json=post_data.get(name),
+        timeout=DEF_TIMEOUT
+    )
     print('\nDEBUG: response: POST')
     pprint(response.json())
     # verify response: status_code
@@ -87,13 +91,16 @@ put_data = {
     'james': {'email': 'changed.james.bishanga@abc.co.uk', 'id': 3}
 }
 
-
 @pytest.mark.parametrize('name', put_data.keys())
 def test_api_put_pytest(name, route='users'):
     # form and send request, get response
     api_url = ROOT_TEST_URL + f'/{route}/{str(put_data.get(name).get("id"))}'
     put_data_json = {'email': put_data.get(name).get('email')}
-    response = requests.put(url=api_url, json=put_data_json)
+    response = requests.put(
+        url=api_url,
+        json=put_data_json,
+        timeout=DEF_TIMEOUT
+    )
 
     # verify response: status_code
     assert response.status_code == 200
@@ -107,7 +114,7 @@ def test_api_put_pytest(name, route='users'):
 def test_api_delete_pytest(name, route='users'):
     # form and send request, get response
     api_url = ROOT_TEST_URL + f'/{route}/{str(put_data.get(name).get("id"))}'
-    response = requests.delete(url=api_url)
+    response = requests.delete(url=api_url, timeout=DEF_TIMEOUT)
     print('\nDEBUG: response: DELETE')
     pprint(response.json())
 
