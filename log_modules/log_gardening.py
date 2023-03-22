@@ -1,11 +1,23 @@
 #!/usr/bin/python
 
 """
-A Module for post-processing of SysTest Logs.
+A Module for Post-Processing of SysTest Logs.
 
 Most SysTest Experiments generate logs
 These need to be post-processed and analysed
 This module aims to have re-usable methods for doing just that...
+
+Primary APIs: Proposed
++ read_chunks
++ read_lines
++ readlog_tail
++ readlog_head
++ search_printlines
++ search_countlines
++ logsize_numlines
++ logsize_numbytes
++ logdate_created
++ logdate_lastmodified
 """
 
 # pylint: disable=redefined-outer-name
@@ -14,26 +26,13 @@ This module aims to have re-usable methods for doing just that...
 # pylint: disable=use-dict-literal
 # pylint: disable=use-list-literal
 
-# primary APIs
-# + read_chunks
-# + read_lines
-# + readlog_tail
-# + readlog_head
-# + search_printlines
-# + search_countlines
-# + logsize_numlines
-# + logsize_numbytes
-# + logdate_created
-# + logdate_lastmodified
-
+import os
 import subprocess
 from pprint import pprint
 
-
 MEM_LIMIT = 10000
-DEF_LOGFILE = "./logs/sample_service_log.txt"
+DEF_LOGFILE = os.path.join(os.curdir, '..', 'logs', 'sample_service_log.txt')
 DEF_ENCODING = 'UTF-8'
-
 
 class LogGardening():
     """ For Reading and Post-Processing/Analysing Log Files """
@@ -54,7 +53,8 @@ class LogGardening():
         """Yields chunks of log file, in specified byte sizes.
 
         Args:
-            chunksize (int, optional): size in bytes of chunk. Defaults to 1024.
+            chunksize (int, optional): size in bytes of chunk.
+                                       Defaults to 1024.
 
         Yields:
             str: chunks of log, in specified byte size.
@@ -101,7 +101,7 @@ class LogGardening():
         Returns:
             str: bottom n bytes of the log file.
         """
-        help_txt = "numbytes: expects: +ve integer"
+        help_txt = 'numbytes: expects: +ve integer'
         assert isinstance(numbytes, int) and numbytes > 0, help_txt
         with open(self.logfile_path, 'rb') as f:
             tail = f.read(f.seek(-numbytes, 2))
@@ -116,7 +116,7 @@ class LogGardening():
         Returns:
             str: selection of log file, first n bytes.
         """
-        help_txt = "numbytes: expects: +ve int"
+        help_txt = 'numbytes: expects: +ve int'
         assert isinstance(numbytes, int) and numbytes > 0, help_txt
         head = ''
         try:
@@ -138,14 +138,16 @@ class LogGardening():
         """Parses log file, from an offset starting point, n bytes.
 
         Args:
-            offset (int, optional): starting point, line number. Defaults to 0.
-            numbytes (int, optional): number of bytes to output. Defaults to 100.
+            offset (int, optional): starting point, line number.
+                                    Defaults to 0.
+            numbytes (int, optional): number of bytes to output.
+                                      Defaults to 100.
 
         Returns:
             str: selection of log file, described by the args above.
         """
         assert isinstance(offset, int) and isinstance(numbytes, int)
-        assert numbytes > 0, "numbytes: expects: +ve int"
+        assert numbytes > 0, 'numbytes: expects: +ve int'
         with open(self.logfile_path, 'rb') as f:
             f.seek(offset)
             chunk = f.read(numbytes)
@@ -186,13 +188,15 @@ class LogGardening():
                 print(f'\nDEBUG: stderr: {result.stderr}')
         return result
 
-    def grep_lines_with_sub_string(self, sub_string, num_lines=10, logfile=None):
+    def grep_lines_with_sub_string(self, sub_str, num_lines=10, logfile=None):
         """Searches for specified pattern, prints request number of instances.
 
         Args:
-            sub_string (str): search pattern/string
-            num_lines (int, optional): number of lines to output. Defaults to 10.
-            logfile (str, optional): path to log file. Defaults to None.
+            sub_str (str): search pattern/string
+            num_lines (int, optional): number of lines to output.
+                                       Defaults to 10.
+            logfile (str, optional): path to log file.
+                                     Defaults to None.
 
         Returns:
             str: corresponding n lines with search string.
@@ -202,31 +206,35 @@ class LogGardening():
         # grep for substring in specified log, get lines
         util = 'grep'
         params = '-iIn'
-        cmd = f'{util} {params} {sub_string} {log}'
+        cmd = f'{util} {params} {sub_str} {log}'
         print(f'cmd: {cmd}')
-        output = self.run_shell_cmd(cmd).stdout
+        output = str(self.run_shell_cmd(cmd).stdout)
         # only return first N lines
         if output:
-            output_lines = str(output).strip('b').strip("'").strip().split('\n')        
+            output_lines = output.strip('b').strip("'").strip().split('\n')
             for i in range(num_lines):
                 if i < len(output_lines):
                     n_grepped_lines.append(output_lines[i])
         return n_grepped_lines
 
+    def collect_n_log_chunks(self, n_chunks=3, chunk_bsize=100):
+        logchunks = []
+        i_chunks = 0
+        chunk_bsize = 100
+        while i_chunks < n_chunks:
+            new_offset = i_chunks * chunk_bsize
+            chunk = self.readlog_offsetchunk(
+                offset=new_offset,
+                numbytes=chunk_bsize
+            )
+            print(f'\nDEBUG: chunk: {list(chunk)}')
+            logchunks.append(list(chunk))
+            i_chunks += 1
+        self.printlog_lines_head(num_lines=12)
+        return logchunks
 
 if __name__ == '__main__':
-    logfile = "../logs/geckodriver.log"
+    logfile = os.path.join(os.curdir, '..', 'logs', 'geckodriver.log')
     log_file_analyser = LogGardening(logfile_path=logfile)
-    print(f'\nINFO: logfile used: {log_file_analyser.logfile_path}')
-
-    logchunks = []
-    limit = 3
-    num_chunks = 0
-    n_bytes = 100
-    while num_chunks < limit:
-        new_offset = num_chunks * n_bytes
-        chunk = log_file_analyser.readlog_offsetchunk(offset=new_offset, numbytes=n_bytes)
-        print(f'\nDEBUG: chunk: {list(chunk)}')
-        logchunks.append(list(chunk))
-        num_chunks += 1
-    log_file_analyser.printlog_lines_head(num_lines=12)
+    log_chunks = log_file_analyser.collect_n_log_chunks(n_chunks=3)
+    print(f'log_chunks: \n{log_chunks}')
