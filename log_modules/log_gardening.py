@@ -26,13 +26,27 @@ Primary APIs: Proposed
 # pylint: disable=use-dict-literal
 # pylint: disable=use-list-literal
 
+import logging
 import os
 import subprocess
 from pprint import pprint
 
 MEM_LIMIT = 10000
-DEF_LOGFILE = os.path.join(os.curdir, '..', 'logs', 'sample_service_log.txt')
+LOGS_DIR = os.path.join(os.curdir, '..', 'logs')
+DEF_LOGFILE = os.path.join(LOGS_DIR, 'sample_service_log.txt')
 DEF_ENCODING = 'UTF-8'
+
+# Configure Logging
+log_fmt = '%(asctime)s: %(levelname)s: %(message)s'
+date_fmt = '%a/%d.%b.%Y %H:%M:%S'
+logging.basicConfig(format=log_fmt, datefmt=date_fmt, level=logging.DEBUG)
+log = logging.getLogger('log_gardening')
+
+OUT_LOGFILE = os.path.join(LOGS_DIR, 'log_gardening_output.log')
+log_file_h = logging.FileHandler(OUT_LOGFILE, encoding=DEF_ENCODING, mode='w')
+log_file_h.setLevel(logging.DEBUG)
+log_file_h.setFormatter(logging.Formatter(fmt=log_fmt, datefmt=date_fmt))
+log.addHandler(log_file_h)
 
 class LogGardening():
     """ For Reading and Post-Processing/Analysing Log Files """
@@ -59,6 +73,8 @@ class LogGardening():
         Yields:
             str: chunks of log, in specified byte size.
         """
+        log.info('function called: %s', 'readlog_chunks')
+        log.debug('params: chunksize: %s', chunksize)
         with open(self.logfile_path, 'r', encoding=DEF_ENCODING) as f:
             while True:
                 # read in memory-efficient chunks
@@ -101,10 +117,13 @@ class LogGardening():
         Returns:
             str: bottom n bytes of the log file.
         """
+        log.info('function called: %s', 'readlog_tail')
+        log.debug('params: numbytes: %s', numbytes)
         help_txt = 'numbytes: expects: +ve integer'
         assert isinstance(numbytes, int) and numbytes > 0, help_txt
         with open(self.logfile_path, 'rb') as f:
             tail = f.read(f.seek(-numbytes, 2))
+            log.debug('tail: \n%s', tail)
         return tail
 
     def readlog_head(self, numbytes=100):
@@ -116,6 +135,8 @@ class LogGardening():
         Returns:
             str: selection of log file, first n bytes.
         """
+        log.info('function called: readlog_head')
+        log.debug('params: numbytes: %s', numbytes)
         help_txt = 'numbytes: expects: +ve int'
         assert isinstance(numbytes, int) and numbytes > 0, help_txt
         head = ''
@@ -123,6 +144,7 @@ class LogGardening():
             with open(self.logfile_path, 'rb') as f:
                 # head = f.read(numbytes) if numbytes < MEM_LIMIT else None
                 head = f.read(numbytes)
+                log.debug('head: \n%s', head)
         except FileNotFoundError as io_err:
             print(io_err)
         except MemoryError as mem_err:
@@ -146,11 +168,14 @@ class LogGardening():
         Returns:
             str: selection of log file, described by the args above.
         """
+        log.info('function called: readlog_offsetchunk')
+        log.debug('params: offset: %d, numbytes: %s', offset, numbytes)
         assert isinstance(offset, int) and isinstance(numbytes, int)
         assert numbytes > 0, 'numbytes: expects: +ve int'
         with open(self.logfile_path, 'rb') as f:
             f.seek(offset)
             chunk = f.read(numbytes)
+            log.debug('chunk: \n%s', chunk)
         return chunk
 
     @staticmethod
@@ -201,12 +226,15 @@ class LogGardening():
         Returns:
             str: corresponding n lines with search string.
         """
+        log.info('function called: grep_lines_with_sub_string')
+        log.debug('params: sub_str: %s, num_lines: %s, logfile: %s',
+                  sub_str, num_lines, logfile)
         n_grepped_lines = list()
-        log = logfile if logfile else self.logfile_path
+        logfile = logfile if logfile else self.logfile_path
         # grep for substring in specified log, get lines
         util = 'grep'
         params = '-iIn'
-        cmd = f'{util} {params} {sub_str} {log}'
+        cmd = f'{util} {params} {sub_str} {logfile}'
         print(f'cmd: {cmd}')
         output = str(self.run_shell_cmd(cmd).stdout)
         # only return first N lines
