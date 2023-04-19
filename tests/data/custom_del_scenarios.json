@@ -1,0 +1,10 @@
+{
+    "valid": [
+        "consumer_id_12345",
+        "consumer_id_34567"
+    ],
+    "invalid": [
+        "inv_consumer_id",
+        "#?xyz."
+    ]
+}

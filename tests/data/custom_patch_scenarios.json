@@ -1,0 +1,102 @@
+{
+    "valid": {
+        "update_email": {
+            "email": "updated_email_1@abc.co.uk"
+        },
+        "update_address": {
+            "address": {
+                "building": "42",
+                "city": "Manchester",
+                "country": "UK",
+                "countryCode": "44",
+                "postalCode": "M4 3DC",
+                "streetAddress1": "UpdatedAddress Street",
+                "streetAddress2": "Salford",
+                "streetAddress3": "Lancashire"
+            }
+        },
+        "update_address_building": {
+            "address": {
+                "building": "36"
+            }
+        },
+        "update_address_city": {
+            "address": {
+                "city": "Cambridge"
+            }
+        },
+        "update_address_country": {
+            "address": {
+                "country": "Ireland"
+            }
+        },
+        "update_address_countrycode": {
+            "address": {
+                "countryCode": "256"
+            }
+        },
+        "update_address_postalcode": {
+            "address": {
+                "postalCode": "CB2 1AB"
+            }
+        },
+        "update_address_streetaddress1": {
+            "address": {
+                "streetAddress1": "Update Close"
+            }
+        },
+        "update_address_streetaddress2": {
+            "address": {
+                "streetAddress2": "Cambourne"
+            }
+        },
+        "update_address_streetaddress3": {
+            "address": {
+                "streetAddress3": "Lanarkshire"
+            }
+        },
+        "update_name_first": {
+            "name": {
+                "firstName": "Ruth"
+            }
+        },
+        "update_name_family": {
+            "name": {
+                "lastName": "Stein"
+            }
+        },
+        "update_tariffId": {
+            "tariffID": 3
+        }
+    },
+    "invalid": {
+        "update_inv_email": {
+            "email": [5, "#<>", "typo_abc.co.uk", "muchMuchMuchMuchMuchMuchMuchMuchMuchMuchMuchlongerThanMaxLength@abc.co.uk"]
+        },
+        "update_inv_email_parabla": {
+            "email": "typo_efg.co.uk"
+        },
+        "update_inv_address_pcode": {
+            "address": {
+                "building": ["", "#@;", 0.3656, "muchMuchMuchMuchMuchMuchMuchMuchMuchMuchMuchMuchMuchlongerThanMaxLength"],
+                "postalCode": ["", "#@;", 0.374823, "muchMuchlongerThanMaxLength"],
+                "streetAddress1": ["", "#@;", 0.36, "muchMuchMuchMuchMuchMuchMuchMuchMuchMuchMuchMuchMuchlongerThanMaxLength"]
+            }
+        },
+        "update_inv_name_first": {
+            "name": {
+                "firstName": [3, "@#;", "", "muchMuchMuchMuchMuchMuchMuchMuchMuchMuchMuchMuchMuchlongerThanMaxLength"]
+            }
+        },
+        "update_inv_name_family": {
+            "name": {
+                "lastName": [7, "@#;", "", "muchMuchMuchMuchMuchMuchMuchMuchMuchMuchMuchMuchMuchlongerThanMaxLength"]
+            }
+        },
+        "update_inv_name_family_palabra": {
+            "name": {
+                "lastName": "invalid_*&*"
+            }
+        }
+    }
+}  

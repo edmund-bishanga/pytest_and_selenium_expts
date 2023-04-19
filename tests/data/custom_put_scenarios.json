@@ -1,0 +1,306 @@
+{
+    "valid": {
+        "new_consumer_1": {
+            "address": {
+                "building": "101",
+                "city": "Manchester",
+                "country": "UK",
+                "countryCode": "44",
+                "postalCode": "M6 1EF",
+                "streetAddress1": "Lancs Street",
+                "streetAddress2": "Salford",
+                "streetAddress3": "Lancashire"
+            },
+            "email": "valid_consumer@abc.co.uk",
+            "name": {
+                "firstName": "Jane",
+                "lastName": "Knowsley"
+            },
+            "tariffID": 0,
+            "uniqueID": "JKnowsley"
+        },
+        "new_consumer_2": {
+            "address": {
+                "building": "84",
+                "city": "Cambridge",
+                "country": "UK",
+                "countryCode": "44",
+                "postalCode": "CB23BC",
+                "streetAddress1": "London Road",
+                "streetAddress2": "Cambridge",
+                "streetAddress3": "Cambridgeshire"
+            },
+            "email": "valid_consumer@efg.co.uk",
+            "name": {
+                "firstName": "John",
+                "lastName": "Bishanga"
+            },
+            "tariffID": 0,
+            "uniqueID": "JBishanga"
+        }
+    },
+    "invalid": {
+        "invalid_email": {
+            "address": {
+                "building": "101",
+                "city": "Manchester",
+                "country": "UK",
+                "countryCode": "44",
+                "postalCode": "M6 1AB",
+                "streetAddress1": "Lancs Street",
+                "streetAddress2": "Salford",
+                "streetAddress3": "Lancashire"
+            },
+            "email": [5, "#<>", "typo_abc.co.uk", "muchMuchMuchMuchMuchMuchMuchMuchMuchMuchMuchlongerThanMaxLength@abc.co.uk"],
+            "name": {
+                "firstName": "Janet",
+                "lastName": "Knowsley"
+            },
+            "tariffID": 0,
+            "uniqueID": "JtKnowsley"
+        },
+        "invalid_email_format": {
+            "address": {
+                "building": "101",
+                "city": "Manchester",
+                "country": "UK",
+                "countryCode": "44",
+                "postalCode": "M6 1AB",
+                "streetAddress1": "Lancs Street",
+                "streetAddress2": "Salford",
+                "streetAddress3": "Lancashire"
+            },
+            "email": ["invalid_email_addr", "inv_email_at_abc.co.uk", 1234567],
+            "name": {
+                "firstName": "Janet",
+                "lastName": "Knowsley"
+            },
+            "tariffID": 0,
+            "uniqueID": "JtKnowsley"
+        },
+        "invalid_email_type": {
+            "address": {
+                "building": "101",
+                "city": "Manchester",
+                "country": "UK",
+                "countryCode": "44",
+                "postalCode": "M6 1AB",
+                "streetAddress1": "Lancs Street",
+                "streetAddress2": "Salford",
+                "streetAddress3": "Lancashire"
+            },
+            "email": [12345678, 0.2345, -1],
+            "name": {
+                "firstName": "Janet",
+                "lastName": "Knowsley"
+            },
+            "tariffID": 0,
+            "uniqueID": "JtKnowsley"
+        },
+        "invalid_email_length": {
+            "address": {
+                "building": "101",
+                "city": "Manchester",
+                "country": "UK",
+                "countryCode": "44",
+                "postalCode": "M6 1AB",
+                "streetAddress1": "Lancs Street",
+                "streetAddress2": "Salford",
+                "streetAddress3": "Lancashire"
+            },
+            "email": "averyveryveryveryveryveryveryveryveryverylongemail@abc.co.uk",
+            "name": {
+                "firstName": "Janet",
+                "lastName": "Knowsley"
+            },
+            "tariffID": 0,
+            "uniqueID": "JtKnowsley"
+        },
+        "invalid_name_type": {
+            "address": {
+                "building": "84",
+                "city": "Cambridge",
+                "country": "UK",
+                "countryCode": "44",
+                "postalCode": "CB2 3BC",
+                "streetAddress1": "London Road",
+                "streetAddress2": "Cambridge",
+                "streetAddress3": "Cambridgeshire"
+            },
+            "email": "valid_consumer@efg.co.uk",
+            "name": {
+                "firstName": [7, 0.237],
+                "lastName": "Bishanga"
+            },
+            "tariffID": 0,
+            "uniqueID": "JBishanga"
+        },
+        "invalid_name_length": {
+            "address": {
+                "building": "84",
+                "city": "Cambridge",
+                "country": "UK",
+                "countryCode": "44",
+                "postalCode": "CB2 3BC",
+                "streetAddress1": "London Road",
+                "streetAddress2": "Cambridge",
+                "streetAddress3": "Cambridgeshire"
+            },
+            "email": "valid_consumer@efg.co.uk",
+            "name": {
+                "firstName": "Gabriel",
+                "lastName": "AveryveryveryveryveryveryveryveryveryverylongNameBishanga"
+            },
+            "tariffID": 0,
+            "uniqueID": "GBishanga"
+        },
+        "invalid_no_uniqueid": {
+            "address": {
+                "building": "84",
+                "city": "Cambridge",
+                "country": "UK",
+                "countryCode": "44",
+                "postalCode": "CB2 3BC",
+                "streetAddress1": "London Road",
+                "streetAddress2": "Cambridge",
+                "streetAddress3": "Cambridgeshire"
+            },
+            "email": "valid_consumer@efg.co.uk",
+            "name": {
+                "firstName": "Gabriel",
+                "lastName": "Bishanga"
+            },
+            "tariffID": 0
+        },
+        "invalid_no_lastname": {
+            "address": {
+                "building": "84",
+                "city": "Cambridge",
+                "country": "UK",
+                "countryCode": "44",
+                "postalCode": "CB2 3BC",
+                "streetAddress1": "London Road",
+                "streetAddress2": "Cambridge",
+                "streetAddress3": "Cambridgeshire"
+            },
+            "email": "valid_consumer@efg.co.uk",
+            "name": {
+                "firstName": "Samuel",
+                "lastName": ""
+            },
+            "tariffID": 0,
+            "uniqueID": "validCId"
+        },
+        "invalid_empty_names": {
+            "address": {
+                "building": "84",
+                "city": "Cambridge",
+                "country": "UK",
+                "countryCode": "44",
+                "postalCode": "CB2 3BC",
+                "streetAddress1": "London Road",
+                "streetAddress2": "Cambridge",
+                "streetAddress3": "Cambridgeshire"
+            },
+            "email": "valid_consumer@efg.co.uk",
+            "name": {
+                "firstName": "",
+                "lastName": ""
+            },
+            "tariffID": 0,
+            "uniqueID": "validCId"
+        },
+        "invalid_no_name": {
+            "address": {
+                "building": "84",
+                "city": "Cambridge",
+                "country": "UK",
+                "countryCode": "44",
+                "postalCode": "CB2 3BC",
+                "streetAddress1": "London Road",
+                "streetAddress2": "Cambridge",
+                "streetAddress3": "Cambridgeshire"
+            },
+            "email": "valid_consumer@efg.co.uk",
+            "name": {},
+            "tariffID": 0,
+            "uniqueID": "validCId345"
+        },
+        "invalid_tariffid_type": {
+            "address": {
+                "building": "84",
+                "city": "Cambridge",
+                "country": "UK",
+                "countryCode": "44",
+                "postalCode": "CB1 3AB",
+                "streetAddress1": "Oxford Street",
+                "streetAddress2": "Cambridge",
+                "streetAddress3": "Cambridgeshire"
+            },
+            "email": "valid_consumer@efg.co.uk",
+            "name": {
+                "firstName": "Joshua",
+                "lastName": "Bishanga"
+            },
+            "tariffID": ["invalid_type", 0.123],
+            "uniqueID": "JBishanga"
+        },
+        "invalid_tariffid_outofrange": {
+            "address": {
+                "building": "84",
+                "city": "Cambridge",
+                "country": "UK",
+                "countryCode": "44",
+                "postalCode": "CB1 3AB",
+                "streetAddress1": "Oxford Street",
+                "streetAddress2": "Cambridge",
+                "streetAddress3": "Cambridgeshire"
+            },
+            "email": "valid_consumer@efg.co.uk",
+            "name": {
+                "firstName": "Joshua",
+                "lastName": "Bishanga"
+            },
+            "tariffID": -100,
+            "uniqueID": "JBishanga"
+        },
+        "invalid_address_postcode": {
+            "address": {
+                "building": "101",
+                "city": "Manchester",
+                "country": "UK",
+                "countryCode": "44",
+                "postalCode": ["InvalidPostCode", "", "M6 1EF?#", 123, 0.789],
+                "streetAddress1": "Lancs Street",
+                "streetAddress2": "Salford",
+                "streetAddress3": "Lancashire"
+            },
+            "email": "valid_consumer@efg.co.uk",
+            "name": {
+                "firstName": "Janet",
+                "lastName": "Barclays"
+            },
+            "tariffID": 0,
+            "uniqueID": "JBarclays"
+        },
+        "invalid_address_countrycode": {
+            "address": {
+                "building": "101",
+                "city": "Manchester",
+                "country": "UK",
+                "countryCode": ["1234567", 345347348, "abcdefgh", 3.1427],
+                "postalCode": "M4 1EF",
+                "streetAddress1": "Lancs Street",
+                "streetAddress2": "Salford",
+                "streetAddress3": "Lancashire"
+            },
+            "email": "valid_consumer@efg.co.uk",
+            "name": {
+                "firstName": "Joe",
+                "lastName": "Buchanan"
+            },
+            "tariffID": 0,
+            "uniqueID": "JBuchanan"
+        }
+    }
+}  

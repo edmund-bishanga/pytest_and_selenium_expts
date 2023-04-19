@@ -1,0 +1,10 @@
+{
+    "valid": [
+        "valid_consumer_1",
+        "valid_consumer_2"
+    ],
+    "invalid": [
+        "inv_consumer_id_1",
+        "inv_consumer_id_2/#"
+    ]
+}  
